@@ -1,0 +1,1593 @@
+<!DOCTYPE html>
+<!-- v6.0 — 2026-11-15: Quiet dark redesign. Five tabs + More. Data layer carried over from v5.4 unchanged. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0C0E12">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Financial Command</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0C0E12;--card:#151920;--line:#232833;--line2:#1B2029;--edge:#3A4250;--tx:#ECEAE4;--mut:#A3AAB8;--dim:#6E7684;
+--brass:#D8B15A;--ok:#4CC9A6;--warn:#EDB04A;--bad:#FF8A5C;--blue:#7FB2FF;--band:#2E6B5C;
+--c1:#3987e5;--c2:#d95926;--c3:#199e70;--c4:#c98500;--c5:#d55181;
+--head:'Space Grotesk',system-ui,sans-serif;--body:Inter,system-ui,sans-serif;--mono:'IBM Plex Mono',ui-monospace,monospace}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--tx);font-family:var(--body);font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased}
+body{overflow-x:hidden}
+button,input,select,textarea{font-family:inherit;font-size:inherit;color:inherit}
+button{cursor:pointer}
+a{color:inherit;text-decoration:none}
+#app{max-width:480px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column}
+#view{flex:1;padding:22px 20px 110px;display:flex;flex-direction:column;gap:18px}
+h1{margin:0;font-family:var(--head);font-size:26px;font-weight:700;letter-spacing:-.3px}
+h2{margin:0;font-family:var(--head);font-size:17px;font-weight:600}
+.sub{font-size:13px;color:var(--mut)}
+.tiny{font-size:12px;color:var(--mut)}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.big{font-family:var(--mono);font-size:38px;font-weight:600;letter-spacing:-1px;line-height:1.1}
+.card{background:var(--card);border-radius:18px;padding:16px}
+.row{display:flex;align-items:center;gap:12px}
+.between{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.grow{flex:1;min-width:0}
+.ok{color:var(--ok)}.warn{color:var(--warn)}.bad{color:var(--bad)}.mutc{color:var(--mut)}.brass{color:var(--brass)}
+.chip{font-size:12px;font-weight:600;border:1px solid currentColor;border-radius:10px;padding:3px 8px;white-space:nowrap}
+.tag{font-size:11px;border:1px solid currentColor;border-radius:10px;padding:1px 7px;white-space:nowrap}
+.tag.auto{color:var(--blue)}.tag.you{color:var(--brass)}
+.list{display:flex;flex-direction:column}
+.li{display:flex;align-items:center;gap:12px;min-height:56px;border-bottom:1px solid var(--line2);padding:8px 0;width:100%;background:none;border-left:0;border-right:0;border-top:0;text-align:left}
+.li:last-child{border-bottom:0}
+.li .t{font-family:var(--mono);font-weight:600;font-size:15px}
+.li .n{font-size:12px;color:var(--mut);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chev{flex-shrink:0;color:var(--mut)}
+.nav-row{display:flex;align-items:center;justify-content:space-between;min-height:52px;border:0;border-top:1px solid var(--line);background:none;font-size:15px;text-align:left;padding:0;width:100%;gap:10px}
+.nav-row .r{color:var(--mut);font-size:13px;text-align:right}
+.seg{display:flex;background:var(--card);border-radius:22px;padding:4px;gap:2px}
+.seg button{flex:1;min-height:44px;border:0;border-radius:18px;background:none;color:var(--mut);font-size:14px}
+.seg button.on{background:var(--tx);color:var(--bg);font-weight:600}
+.btn{min-height:48px;border:0;border-radius:14px;background:var(--brass);color:var(--bg);font-weight:600;font-size:15px;padding:0 18px}
+.btn.ghost{background:none;border:1px solid var(--edge);color:var(--tx);font-weight:500}
+.btn.quiet{background:var(--line);color:var(--mut)}
+.btn.sm{min-height:44px;font-size:14px;padding:0 14px}
+.btn.full{width:100%}
+.pill{min-height:44px;padding:0 14px;border-radius:22px;border:1px solid var(--edge);background:none;color:var(--mut);font-size:14px}
+.pill.on{border-color:var(--brass);color:var(--brass)}
+input[type=text],input[type=number],input[type=month],input[type=date],select,textarea{width:100%;min-height:48px;border-radius:14px;border:1px solid var(--edge);background:var(--bg);color:var(--tx);padding:0 14px;outline:none}
+textarea{padding:12px 14px;min-height:110px;resize:vertical;line-height:1.4}
+input:focus,select:focus,textarea:focus{border-color:var(--brass)}
+input.amt{font-family:var(--mono);font-size:20px}
+label.f{display:block;font-size:13px;color:var(--mut);margin-bottom:6px}
+.bar{height:8px;border-radius:4px;background:var(--line);overflow:hidden}
+.bar>i{display:block;height:8px;border-radius:4px;background:var(--ok)}
+.back{width:44px;height:44px;border-radius:22px;background:var(--card);border:0;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.k{font-size:12px;color:var(--mut)}.v{font-family:var(--mono);font-size:17px;font-weight:600}
+.dot{width:10px;height:10px;border-radius:3px;flex-shrink:0;display:inline-block}
+.empty{color:var(--mut);font-size:14px;padding:18px 0;text-align:center}
+nav#tabs{position:fixed;left:0;right:0;bottom:0;z-index:20;background:rgba(12,14,18,.96);backdrop-filter:blur(10px);border-top:1px solid var(--line)}
+nav#tabs>div{max-width:480px;margin:0 auto;display:flex;padding:6px 8px calc(10px + env(safe-area-inset-bottom))}
+nav#tabs button{flex:1;min-height:52px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:var(--mut);font-size:12px;background:none;border:0}
+nav#tabs button.on{color:var(--brass);font-weight:600}
+#sheet{position:fixed;inset:0;z-index:40;display:none;background:rgba(6,7,10,.72)}
+#sheet.on{display:flex;align-items:flex-end;justify-content:center}
+#sheet-in{width:100%;max-width:480px;max-height:92vh;overflow-y:auto;background:var(--card);border-radius:24px 24px 0 0;padding:10px 20px calc(24px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:16px}
+.grab{width:40px;height:4px;border-radius:2px;background:var(--edge);align-self:center}
+#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(92px + env(safe-area-inset-bottom));z-index:60;display:none;max-width:88%;padding:11px 16px;border-radius:14px;color:#0C0E12;font-weight:600;font-size:14px;text-align:center}
+#syncline{font-size:12px;color:var(--dim)}
+details.x{border-top:1px solid var(--line)}
+details.x:last-of-type{border-bottom:1px solid var(--line)}
+details.x>summary{list-style:none;display:flex;align-items:center;justify-content:space-between;min-height:52px;font-size:15px;cursor:pointer;gap:10px}
+details.x>summary::-webkit-details-marker{display:none}
+details.x>summary .r{color:var(--mut);font-size:13px;text-align:right}
+details.x>div{font-size:14px;color:var(--mut);padding:0 0 14px;line-height:1.5}
+details.x ul{margin:0;padding-left:18px}details.x li{margin-bottom:6px}
+.check{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-bottom:1px solid var(--line2)}
+.check:last-child{border-bottom:0}
+.check .ic{width:24px;height:24px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:13px;font-weight:700;color:var(--bg)}
+.lg{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12px;color:var(--mut)}
+.lg span{display:flex;align-items:center;gap:6px}
+@media (prefers-reduced-motion:no-preference){.bar>i{transition:width .3s}}
+@media print{nav#tabs,#toast,.noprint{display:none!important}body,html{background:#fff;color:#111}.card{background:#f4f4f2}}
+</style>
+</head>
+<body>
+<div id="app"><main id="view"></main></div>
+<nav id="tabs" aria-label="Main"><div id="tabs-in"></div></nav>
+<div id="sheet" role="dialog" aria-modal="true"><div id="sheet-in"></div></div>
+<div id="toast" role="status"></div>
+<script>
+// ════════════════════════════════════════════════════════════════
+// CONFIG
+// ════════════════════════════════════════════════════════════════
+// All personal configuration lives in device localStorage (afc-settings) — nothing sensitive ships in this file.
+var SETTINGS_KEY="afc-settings";
+function loadSettings(){ try{return JSON.parse(localStorage.getItem(SETTINGS_KEY))||{};}catch(e){return {};} }
+function saveSettingsObj(o){ try{localStorage.setItem(SETTINGS_KEY,JSON.stringify(o));}catch(e){} }
+var SETTINGS=loadSettings();
+var SCRIPT_URL=SETTINGS.scriptUrl||"";
+var FINNHUB_KEY=SETTINGS.finnhubKey||"";
+var AUTH_TOKEN=SETTINGS.token||"";
+var SALARY=parseFloat(SETTINGS.salarySAR)||0, SAR_USD=1/3.75, SAR_PER_USD=3.75; // SAR/USD peg constant 3.75
+// Installment amounts come from Settings (type-A / type-B months + maintenance).
+var EGP_A=parseFloat(SETTINGS.egpA)||0, EGP_B=parseFloat(SETTINGS.egpB)||0, EGP_AXA=parseFloat(SETTINGS.egpAxa)||0, EGP_M=parseFloat(SETTINGS.egpM)||0;
+var PROP_OF_TYPE={A:SETTINGS.propA||"Property A",B:SETTINGS.propB||"Property B"};
+var LS_KEY="ahmad-fin-v3";
+var LS_KEY_OLD="ahmad-fin-v2"; // migrated on first load
+var FIRE_AGE_BASE=parseFloat(SETTINGS.age2026)||0; // age as of mid-2026 (Settings); ageNow() adds elapsed time
+
+var CATS=[
+  {k:"food", l:"Food Delivery",  c:"#E8A838"},
+  {k:"ride", l:"Ride Hailing",   c:"#5B9BE2"},
+  {k:"shop", l:"Shopping",       c:"#A78BFA"},
+  {k:"rest", l:"Restaurants",    c:"#E25B5B"},
+  {k:"fun",  l:"Entertainment",  c:"#34C9A3"},
+  {k:"groc", l:"Groceries",      c:"#7AABCC"},
+  {k:"health",l:"Health",        c:"#F0A0A0"},
+  {k:"flights",l:"Flights",      c:"#F0834B"},
+  {k:"cash", l:"Cash",           c:"#A0A0A0"},
+  {k:"charity",l:"Charity",      c:"#A9B83B"},
+  {k:"work", l:"Work",           c:"#64748B"},
+  {k:"other",l:"Other",          c:"#888888"}
+];
+// Fixed donut ring order — keeps confusable hues (violet/blue, the grays) apart.
+// v4.2: Charity (gold-green) sits between violet and teal; Work (slate) between pink and orange.
+var CAT_RING_ORDER=["food","ride","rest","shop","charity","fun","health","work","flights","groc","cash","other"];
+
+// ════════════════════════════════════════════════════════════════
+// TIERS — sleeves per TARGET PORTFOLIO v5 (confirmed 2026-10-07); keys unchanged so the Positions sheet keeps parsing
+// ════════════════════════════════════════════════════════════
+// Function-led SLEEVES. Variable kept as TIERS so downstream code works.
+var TIERS=[
+  {k:"etf", name:"ETF Core & Ballast",   c:"#D4A84B", rule:"v6 PASSIVE 50% — VALL 40% (legacy VOO / Al Rajhi inside it) · IGLN 5% (legacy GLD inside) · IUES 5% · floor 50% by 2027-09-30 (35% by 2026-12-31) · lines are cost basis"},
+  {k:"ai",  name:"AI Infra & Semis",     c:"#5B9BE2", rule:"Mag-7 7.5% (NVDA GOOGL AMZN, 2.5% each) + AI/semis 10% (TSM 2 · AVGO 2 · MU NBIS COHR ANET 1.5) · look-through tech ceiling 45% · NVDA grandfathered"},
+  {k:"saas",name:"Software Platforms",   c:"#34C9A3", rule:"SaaS 7.5% — NOW SNOW DDOG CRWD ZETA 1.5% each · line full = no adds; winners run · CRWD grandfathered · NOW: Q4 cRPO <19% in Jan = sell"},
+  {k:"pwr", name:"Power & Uranium",      c:"#6FCBE8", rule:"No v6 seats — CEG and CCJ are swings (run-off list)"},
+  {k:"con", name:"Consumer & Commerce",  c:"#A78BFA", rule:"Consumer 7% — MELI ELF SHOP 2% · CELH 1% (3-year hold, trimmed to the line 2026-10-30) · SHOP grandfathered"},
+  {k:"hlth",name:"Health & Bio",         c:"#F0A0A0", rule:"Health & Bio 4% — LLY 2% (ladder 980/900/820) + ARGX 2% (T1 ≤$900) · both unheld 2026-11-01"},
+  {k:"adt", name:"AdTech & Data",        c:"#F0834B", rule:"No plan seats — TTD is a swing (run-off list)"},
+  {k:"moon",name:"Moonshots",            c:"#E879F9", rule:"Moonshots 2% — NTLA 1% + HSAI 1%"},
+  {k:"swg", name:"Swing Book",           c:"#C3E04D", rule:"v6: 5% = five $8K seats, opening only once the 27-name run-off list (Floors v2) is under $40K · level / floor / date on every name · NO ADDS (rule 18) · proceeds → VALL"},
+  {k:"exit",name:"Harvest / Exit",       c:"#E25B5B", rule:"Dated exits; after the date → market; proceeds → VALL"},
+  {k:"ext", name:"Crypto / External",    c:"#8A93A6", rule:"Crypto 2% — SOL 1% + ATOM 0.5% + FET 0.5% (OKX spot only, 6-month dates); MSTR is a sunset swing ($220 / $120 / 2027-06-30)"}
+];
+function tierOf(k){for(var i=0;i<TIERS.length;i++){if(TIERS[i].k===k)return TIERS[i];}return TIERS[4];}
+// Sleeve-name → key map for parsing the master sheet.
+var SLEEVE_MAP={"ETF Core":"etf","AI Infra":"ai","Software":"saas","Power":"pwr","Consumer":"con","Health":"hlth","AdTech":"adt","Industrial":"pwr","Moonshot":"moon","Swing":"swg","Swing Book":"swg","EXIT":"exit","External":"ext"};
+// Raw status → thesis status key map.
+var RAWSTATUS_MAP={"DCA":"intact","DCA-NEW":"building","AT TARGET":"intact","AT CAP":"intact","HOLD":"intact","BUILD":"building","TRIM":"weakening","GATED":"weakening","EXIT":"exit","RIDER":"exit","BAND":"exit"};
+// Donut ring order for sleeves.
+var TIER_RING_ORDER=["etf","ai","saas","pwr","con","hlth","adt","moon","swg","exit","ext"];
+
+// ════════════════════════════════════════════════════════════════
+// GOVERNANCE BUCKETS — v3.1 caps & floors; membership moves ONLY at monthly change-control (last Saturday)
+// ════════════════════════════════════════════════════════════
+// AI-complex = the 'ai' sleeve plus AI-linked names living in other sleeves. Computed live.
+var AI_EXTRA=["IREN","APLD"]; // GOOGL moved INTO the 'ai' sleeve at v3.1 (2026-08-07)
+var AI_CAP=25, MOON_CAP=5; // retired gauges (v3.1) — kept so old references cannot break
+var SINGLE_CAP=5, CORE_FLOOR=50; // v3 (2026-09-18): 5% of book per single stock · passive floor 50% by 2027-09-30
+var SWING_CAP=40000;                        // v6 (2026-10-29): swing book 5% of the plan = five $8K seats ($40K); the current run-off list is outside the cap
+var SWING_CLUSTER=[];                       // v4-draft "AI-datacenter trio" cap retired by v5 (2026-10-07)
+var SWING_CLUSTER_CAP=16000;
+var PASSIVE_DEADLINE="2027-09-30";
+function isExitPos(p){return p.status==="exit"||p.status==="broken";}
+// Crypto rows (OKX spot) live in the "ext" sleeve with a "-USD" ticker (ATOM-USD, FET-USD) so the equity quote feed
+// can never mistake them for Atomera / Forum Energy. isCrypto() is the one test every rule uses.
+function isCrypto(p){return p.tier==="ext"||/-USD$/.test(String(p.t||""));}
+// A "single stock" for the 5% ceiling = anything that is not an ETF row and not crypto (v5: ETFs and crypto exempt).
+function isSingleStock(p){return p.tier!=="etf"&&!isCrypto(p);}
+// Passive = ETF sleeve rows that are not exits (QQQ is an exit). Crypto is its own 2% line under v5, not passive. Cash is NOT passive.
+function passiveValue(){
+  return getPositions().filter(function(p){return p.qty>0&&p.tier==="etf"&&!isExitPos(p);}).reduce(function(s,p){return s+posVal(p);},0);
+}
+function swingValue(){return tierValue("swg");}
+function softwareTarget(){return getPositions().filter(function(p){return p.tier==="saas";}).reduce(function(s,p){return s+(p.target||0);},0);}
+function aiComplexValue(){return tierValue("ai")+bucketValue(AI_EXTRA);}
+// v5 exit list (ruled 2026-09-30): every swing carries a level, a floor and a date; proceeds → VALL.
+var HARVEST_TARGET=160000; // v5 funding check (2026-10-06): exit list expected to release $140-180K → VALL
+// Exit-proceeds baseline — share counts of the 26 exit-list names at the 2026-10-09 close (no exit-list name had been
+// SOLD since the 2026-09-30 ruling; the only sale was QQQ, 20.7026 sh on 2026-10-02). Names bought since are held at the
+// current count, so adds never show as negative proceeds. Harvested = (baseline qty − current qty) × price; self-updates on Pull.
+// The v3.1 program (2026-08-07 → 2026-09-30, ≈$115K incl. ZS/CRM/ADBE/UBER/BMRN/TEM/BABA/SKHY/LUNR) is closed history — see the journal.
+var HARVEST_BASELINE={
+  QQQ:{q:20.7026,p:750.65},
+  ADBE:{q:63.2926,p:242.27}, INTU:{q:42.3794,p:302.00}, TTD:{q:1066.9874,p:12.10}, NVO:{q:324.2111,p:38.64},
+  MSTR:{q:144.0704,p:154.90}, CDNS:{q:30.0492,p:352.84}, CCJ:{q:45,p:88.06}, CEG:{q:22.54,p:298.07},
+  IREN:{q:252,p:35.21}, APLD:{q:233,p:23.59}, AMPX:{q:677,p:9.44}, FSLR:{q:33,p:177.82}, ENPH:{q:171,p:32.69},
+  INOD:{q:107,p:62.30}, PLAB:{q:241,p:29.62}, MRAM:{q:422,p:16.22}, APP:{q:47,p:276.61}, TMDX:{q:81,p:77.87},
+  WYFI:{q:441,p:15.75}, VISN:{q:965,p:6.02}, GRAB:{q:2428,p:3.19}, BEAM:{q:155,p:25.75}, RGTI:{q:360,p:14.03},
+  NNE:{q:286,p:15.36}, SERV:{q:1129.7698,p:4.35}, OPTT:{q:351,p:0.85}
+};
+function harvestDone(){
+  var byT={}; getPositions().forEach(function(p){ byT[p.t]=p; });
+  var total=0;
+  Object.keys(HARVEST_BASELINE).forEach(function(t){
+    var b=HARVEST_BASELINE[t], cur=byT[t];
+    var curQty=cur?(parseFloat(cur.qty)||0):0;
+    var sold=b.q-curQty;
+    if(sold>0.0001){ var px=(cur&&cur.price>0)?cur.price:b.p; total+=sold*px; }
+  });
+  return total;
+}
+// Rolling high-water NAV → current drawdown vs the −12%/−18% kill-switches.
+function drawdownNow(){
+  var nav=liveNLV();
+  if(!nav||nav<=0) return null;
+  if(!S.navHighWater||nav>S.navHighWater){ S.navHighWater=nav; saveState(); return {dd:0,hw:nav}; }
+  return {dd:(nav-S.navHighWater)/S.navHighWater*100, hw:S.navHighWater};
+}
+
+// ════════════════════════════════════════════════════════════════
+// POSITIONS — Strategy v3.1 go-live book, live IBKR pull 2026-08-07
+// (NAV $571,293 · cash +$28,988 · leverage 0.95x). Targets v3.1
+// (2026-08-07 ratified): 60/40 core-satellite, 20 conviction
+// slots, moonshots IREN/APLD/NTLA, exits = strength-harvest ladders.
+// VOO INCLUDES Al Rajhi 18 sh (permanent rule 2026-08-07).
+// ev = next known event. Maintain via Sheets → Pull.
+// ════════════════════════════════════════════════════════════════
+var POSITIONS_SEED=[]; // book lives in Sheets + this device only
+
+var DY_SEED={};
+var CH_SEED={};
+// Apply both seeds to POSITIONS_SEED (dy where 0/unset, channel where empty).
+POSITIONS_SEED.forEach(function(p){
+  if(!p.dy) p.dy=DY_SEED[p.t]||0;
+  if(!p.channel) p.channel=CH_SEED[p.t]||"";
+});
+
+var STATUS_META={
+  strengthening:{c:"#34C9A3",l:"Strengthening"},
+  intact:{c:"#5B9BE2",l:"Intact"},
+  weakening:{c:"#E8A838",l:"Weakening"},
+  broken:{c:"#E25B5B",l:"Broken"},
+  building:{c:"#A78BFA",l:"Building"},
+  exit:{c:"#E25B5B",l:"Exit"}
+};
+
+// Governance — TARGET PORTFOLIO v6 (locked 2026-10-29; $800K by 2027-12-31; cost-basis lines). Text refresh 2026-11-01 (no feature changes). governance.md applies only where v6 is silent.
+var RULES=[
+ ["The law (v6, 2026-10-29)","$800K by 2027-12-31. Lines are COST BASIS (money paid in), never market value — they cap capital in and are never a buy signal. Cash 5% · Passive 50% (VALL 40 · IGLN 5 · IUES 5; legacy VOO inside VALL, GLD inside IGLN) · Mag-7 7.5% (NVDA GOOGL AMZN 2.5) · AI/semis 10% (TSM 2 · AVGO 2 · MU NBIS COHR ANET 1.5) · SaaS 7.5% (NOW SNOW DDOG CRWD ZETA 1.5) · Consumer 7% (MELI ELF SHOP 2 · CELH 1) · Health & Bio 4% (LLY 2 · ARGX 2) · Moonshots 2% (NTLA 1 · HSAI 1) · Crypto 2% (SOL 1 · ATOM 0.5 · FET 0.5) · Swings 5% (five $8K seats). Grandfathered over their lines: NVDA, CRWD, SHOP."],
+ ["Winners run","Profit % is NEVER a sell trigger. Above its line a name takes no adds and is never trimmed for size — the only size brake is the 5%-of-book MARKET-VALUE ceiling (ETFs and crypto exempt); the excess is sold into strength, proceeds → VALL. Main-portfolio names are sold ONLY on a fired kill criterion or a displacement ruling; analyst take-profit and re-entry calls (incl. Saif's) are data only. New rule (2026-10-29): a seat at/over its ceiling that rallied >10% into a print is cut to half before the print."],
+ ["Giveback rule","A 50% retrace of a position's peak gain forces a dossier re-vet. That is the only giveback trigger — +100% is a scoreboard, not a decision."],
+ ["Passive floor — 50% by 2027-09-30","Checkpoints 35% by 2026-12-31 · 45% by 2027-03-31 · 48% by 2027-06-30 (aim 2027-06-30). About 85% of every incoming dollar goes to passive (VALL / IGLN / IUES) until the floor is met; ~15% to ladders. Miss a checkpoint → 100% passive until back on track. Miss the deadline → trims fund the gap, largest overweight first. All swing proceeds and ceiling trims → VALL. Legacy VOO (incl. Al Rajhi) counts inside the VALL line and folds at the Q1 2027 review; VXUS/XLE/SCHD are gone (Oct 2026)."],
+ ["Entries","Dossier (numbered kill criteria + Bull/Base/Bear) BEFORE the first tranche — SOL needs its ledger block first. New names only by displacement. Entries only at fair-value ladders (earnings × a normal multiple), never a % below market and never chasing a headline or a post. Minimum $2,000 per single-name order; no minimum on passive lines. Nothing gated to a print is bought before the print. Look-through tech ceiling 45%."],
+ ["Swing run-off list — 27 names (Floors v2, 2026-10-19)","Nothing on the run-off list receives adds (rule 18). Every name carries a floor and a date: below the floor = sell now (rule 19); past the date = sell at market; otherwise sell into strength at the written level. Saif names: his exit call IS the exit, his target is the reference, his holds/buys/support-zone lists are data only, silence past the date = market. Proceeds → VALL, never recycled. SE replaces GRAB with no new seat. Pending ruling (2026-11-01): harvest-at-cost — any name at/above cost may be sold any time, Saif names under a dated mirror waiver."],
+ ["Swing Book (v6)","5% of the plan = five $8K seats ($40K). No new swing seat opens until the run-off list is under $40K. A swing closes at +30-40% from cost, at its floor, or on its date — whichever first. Every new swing needs a seat, cap room and a written stop / harvest / date before the first dollar. Scored against VALL at 12 months (first review March 2027)."],
+ ["Crypto","Spot only on OKX — no leverage, no derivatives. SOL 1% + ATOM 0.5% + FET 0.5% (Saif calls; his exit mirrored; DOGE out). Every crypto position carries a 6-month resolve date. Staking is checked on mechanism; lending is not staking."],
+ ["Live data before verdicts","Every session opens with a live IBKR pull and a reconciliation of inter-session trades. Dashboard and dossier figures are context, never current. No table, sizing call or price reference without a fresh pull."],
+ ["One-time items stripped","Every earnings verdict states the core number ex-settlements, tariff recoveries and unrealized equity marks. A single-day drop in a winner is diagnosed (stock-specific / rotation / fundamental) before any action."],
+ ["Screens","Claude supplies the data on US-defense, Israeli-origin, consumer-harm and Shariah flags; every exclusion decision is the owner's. Closed rulings are never reopened (APP, CHYM, CELH, SNOW keep; SSYS, IONQ, SPCX, VELO out; HSAI cleared 2026-10-01; GRAB compliant again 2026-10-29)."],
+ ["Rhythm","Monthly: VALL $5,000 by IBKR recurring on the 15th (rising as swings convert; plan figure ~$10,900) · IGLN $760 + IUES $1,085 by recurring (LSE lines) · ladders only when a rung prints. Reviews quarterly (next Q1 2027) with weights re-expressed against the current book. Every number carries a date."]
+];
+// ════════════════════════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════════════════════════
+// ── v4.2 WEALTH — installment schedule seed (EGP, dated 2026-08-02, EXACT) ──
+function defaultWealth(){ return []; }
+
+function defaultState(){
+  return {
+    egpRate:13.71, cashReserve:0, cashUSD:0,
+    caps:{food:0,ride:0,shop:0,rest:0,fun:0,groc:0,health:0,flights:0,cash:0,charity:0,work:0,other:0},
+    fixedItems:[],
+    family:{plan:[],holdings:[],folioNote:"",items:[],log:[]},
+    monthSub:"month",
+    savings:{goals:[]},
+    wedding:{entries:[]},
+    estate:{},
+    wealth:defaultWealth(),
+    transactions:[], monthHistory:[],
+    ibkrHistory:[],
+    rollMode:"ibkr", editCaps:false, editFixed:false, editFam:false, selCat:"food",
+    positions:null, portSubTab:"positions", monthSeg:"current",
+    lastRefresh:0, positionsVersion:"sanitized-v1",
+    peakGain:{}, foundry:null,
+    spouse:{contrib:0,holdings:[],note:""},
+    fire:{spend:0,contrib:0,swr:4,ret:8,rental:0,divEnabled:true,
+          leanSpend:0,fatSpend:0,baristaIncome:0,coastAge:0},
+    perfHistory:[]
+  };
+}
+
+function loadState(){
+  try{
+    var raw=localStorage.getItem(LS_KEY);
+    if(raw){
+      var s=JSON.parse(raw), d=defaultState();
+      for(var k in d){ if(s[k]===undefined) s[k]=d[k]; }
+      if(s.positionsVersion!==d.positionsVersion){ s.positions=null; s.positionsVersion=d.positionsVersion; }
+      migrate(s);
+      return s;
+    }
+    // Migrate budgeting data from V2 if present (V2 positions were stale — intentionally not migrated)
+    var old=localStorage.getItem(LS_KEY_OLD);
+    if(old){
+      var o=JSON.parse(old), d2=defaultState();
+      ["egpRate","cashReserve","caps","transactions","monthHistory","ibkrHistory","rollMode","spouse","perfHistory"].forEach(function(k){
+        if(o[k]!==undefined&&o[k]!==null) d2[k]=o[k];
+      });
+      if(o.fire){ d2.fire=Object.assign(d2.fire,o.fire); if(d2.fire.contrib<15000) d2.fire.contrib=15000; }
+      migrate(d2);
+      return d2;
+    }
+  }catch(e){}
+  return defaultState();
+}
+
+function dedupeByMonth(arr){
+  // Last entry per month wins. Months are NORMALIZED first (parseMonth) so
+  // "2026-06" and a Sheets date-cell like "Mon Jun 01 2026..." collapse into
+  // one key — this was the root of the duplicated May/Jun history cards.
+  var map={};
+  (arr||[]).forEach(function(x){
+    if(!x||!x.month) return;
+    var m=parseMonth(x.month);
+    if(!/^\d{4}-\d{2}$/.test(m)) m=String(x.month).trim();
+    x.month=m;
+    map[m]=x;
+  });
+  return Object.keys(map).sort().map(function(m){return map[m];});
+}
+
+// One-time data migrations for devices carrying older state. Never deletes user data.
+function migrate(s){
+  var ver=s.dataVersion||1;
+  if(ver<2){
+    // Verified from the IBKR inception report (Jun 26 '25 – Jul 10 '26):
+    // May 2026 TWR was +22.27 (not 12.53); June 2026 was −3.78 (S&P ≈ −1.0).
+    (s.perfHistory||[]).forEach(function(p){ if(p.month==="2026-05"&&Math.abs(p.ibkr-12.53)<0.01) p.ibkr=22.27; });
+    if(!(s.perfHistory||[]).some(function(p){return p.month==="2026-06";})) s.perfHistory.push({month:"2026-06",ibkr:-3.78,sp:-1.0});
+    var dep={"2025-06":2910,"2025-07":23930,"2025-09":89730,"2025-10":49850,"2025-11":29910,"2025-12":39880,"2026-01":49850,"2026-02":34910,"2026-03":14970,"2026-04":52380,"2026-05":34910,"2026-06":14970,"2026-07":14970};
+    s.ibkrHistory=(s.ibkrHistory||[]).filter(function(h){return !dep[h.month];});
+    Object.keys(dep).forEach(function(m){s.ibkrHistory.push({month:m,usd:dep[m]});});
+    if(s.family){ if(s.family.schd&&s.family.schd.val===8431) s.family.schd.val=8855; if(s.family.bnd&&s.family.bnd.val===201) s.family.bnd.val=400; }
+    s.cashUSD=837;
+  }
+  if(ver<3){
+    // v3 (2026-07-25): real cash is a margin DEBIT — stop pretending it's positive.
+    // Only overwrite if the value is still one of the old defaults; a user-entered figure wins.
+    if(s.cashUSD===837||s.cashUSD===0) s.cashUSD=-1963;
+    // Duplicated closed months / perf rows (repeated appends re-imported by Reconcile) — dedupe, last wins.
+    s.monthHistory=dedupeByMonth(s.monthHistory);
+    s.perfHistory=dedupeByMonth(s.perfHistory);
+    s.ibkrHistory=dedupeByMonth(s.ibkrHistory);
+    // FIRE ladder parameters
+    s.fire=s.fire||{};
+    if(s.fire.leanSpend===undefined) s.fire.leanSpend=60000;
+    if(s.fire.fatSpend===undefined) s.fire.fatSpend=110000;
+    if(s.fire.baristaIncome===undefined) s.fire.baristaIncome=40000;
+    if(s.fire.coastAge===undefined) s.fire.coastAge=40;
+  }
+  if(ver<4){
+    // v4 (2026-08-01): perf corrections from IBKR PA TWR pull + ChartRow (both 2026-08-01):
+    // June 2026 S&P was −1.3 (not −1.0); July 2026 lands: IBKR +1.07, S&P −0.1.
+    (s.perfHistory||[]).forEach(function(p){ if(p.month==="2026-06"&&Math.abs(p.sp-(-1.0))<0.01) p.sp=-1.3; });
+    if(!(s.perfHistory||[]).some(function(p){return p.month==="2026-07";})) (s.perfHistory=s.perfHistory||[]).push({month:"2026-07",ibkr:1.07,sp:-0.1});
+    // DivYield + attribution channel backfill by ticker (never overwrite a non-empty stored channel).
+    (s.positions||[]).forEach(function(p){
+      if(!p.dy) p.dy=DY_SEED[p.t]||0;
+      if(!p.channel) p.channel=CH_SEED[p.t]||"";
+    });
+    // Flights expense category — no cap by default.
+    if(s.caps&&s.caps.flights===undefined) s.caps.flights=0;
+    // Perf subtab retired — its content lives in Trackers now.
+    if(s.portSubTab==="perf") s.portSubTab="trackers";
+  }
+  if(ver<5){
+    // v5 (2026-08-02): property data fix + Wealth/Savings/Wedding/Estate modules.
+    // EGP/SAR live rate correction — only if still on the old default.
+    if(s.egpRate===14) s.egpRate=13.71;
+    // New expense categories (caps default unset).
+    s.caps=s.caps||{};
+    if(s.caps.charity===undefined) s.caps.charity=0;
+    if(s.caps.work===undefined) s.caps.work=0;
+    // Family folio v2 migration — plan rows default empty in the sanitized build.
+    s.family=s.family||{};
+    if(!Array.isArray(s.family.plan)) s.family.plan=[];
+    if(!Array.isArray(s.family.holdings)) s.family.holdings=[];
+    if(!s.family.folioNote) s.family.folioNote="BND fully exited; prior SCHD units absorbed into main book 2026-08-02";
+    if(!Array.isArray(s.family.items)) s.family.items=[];
+    if(!Array.isArray(s.family.log)) s.family.log=[];
+    // Spouse — retirement-lane tracker replaces income/costs card (old keys kept, just unused).
+    s.spouse=s.spouse||{};
+    if(s.spouse.contrib===undefined) s.spouse.contrib=0;
+    if(!Array.isArray(s.spouse.holdings)) s.spouse.holdings=[];
+    // New top-level modules (loadState backfills missing top-level keys; ensure nested shape too).
+    if(!s.wealth||!Array.isArray(s.wealth.schedule)||!s.wealth.schedule.length) s.wealth=defaultWealth();
+    if(!Array.isArray(s.wealth.history)) s.wealth.history=[];
+    if(!s.savings||!Array.isArray(s.savings.goals)) s.savings=defaultState().savings;
+    if(!s.wedding||!Array.isArray(s.wedding.entries)) s.wedding={entries:[]};
+    if(!s.estate||typeof s.estate!=="object") s.estate={};
+    if(!s.estate.life) s.estate.life={done:false,note:""};
+    if(!s.monthSub) s.monthSub="month";
+  }
+  if(ver<6){
+    // v6 (2026-08-07): Strategy v3.1 go-live — ratified FIRE inputs replace old assumptions.
+    // Cash: only overwrite the stale Jul-25 default; a user-entered figure wins.
+  }
+  s.dataVersion=6;
+}
+var S=loadState();
+function saveState(){ try{localStorage.setItem(LS_KEY,JSON.stringify(S));}catch(e){} }
+function getPositions(){ return S.positions||POSITIONS_SEED; }
+
+// ════════════════════════════════════════════════════════════════
+// HELPERS
+// ════════════════════════════════════════════════════════════════
+function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;");}
+function fS(n){return Math.round(n).toLocaleString();}
+function fU(n){return (n<0?"−$":"$")+Math.abs(Math.round(n)).toLocaleString();}
+function fK(n){var a=Math.abs(n),sign=n<0?"−":"";return a>=1e6?sign+"$"+(a/1e6).toFixed(2)+"M":a>=1000?sign+"$"+Math.round(a/1000)+"K":sign+"$"+Math.round(a);}
+function parseMonth(val){
+  if(!val) return "";
+  var s=String(val).trim();
+  if(/^\d{4}-\d{2}$/.test(s)) return s;
+  if(/^\d{4}-\d{2}-\d{2}/.test(s)) return s.slice(0,7);
+  // Sheets date-cells arrive as "Mon Jun 01 2026 00:00:00 GMT+0300" — read the
+  // month NAME directly (new Date() shifts a month across timezones).
+  var MN={jan:"01",feb:"02",mar:"03",apr:"04",may:"05",jun:"06",jul:"07",aug:"08",sep:"09",oct:"10",nov:"11",dec:"12"};
+  var m=s.toLowerCase().match(/\b(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\b[^0-9]*(?:\d{1,2}[^0-9]+)?(\d{4})/);
+  if(m&&m[2]) return m[2]+"-"+MN[m[1]];
+  try{var d=new Date(s);if(!isNaN(d.getTime()))return d.getFullYear()+"-"+("0"+(d.getMonth()+1)).slice(-2);}catch(e){}
+  return s.slice(0,7);
+}
+function nowM(){var d=new Date();return d.getFullYear()+"-"+("0"+(d.getMonth()+1)).slice(-2);}
+function toDay(){var d=new Date();return d.getFullYear()+"-"+("0"+(d.getMonth()+1)).slice(-2)+"-"+("0"+d.getDate()).slice(-2);}
+function ageNow(){ // 33 anchored mid-2026
+  return FIRE_AGE_BASE + Math.max(0,((Date.now()-new Date("2026-06-01").getTime())/31557600000));
+}
+function mType(m){var n=parseInt(m.slice(5,7),10);if(n===1||n===4||n===7||n===10)return "A";if(n===2||n===5||n===8||n===11)return "B";return "light";}
+function mLabel(m){var p=m.split("-");return new Date(+p[0],+p[1]-1).toLocaleString("en-GB",{month:"short",year:"2-digit"});}
+function pSAR(t){return t==="A"?EGP_A/S.egpRate:t==="B"?EGP_B/S.egpRate:0;}
+function getSpent(month){var sp={};CATS.forEach(function(c){sp[c.k]=0;});var m=String(month).trim();S.transactions.forEach(function(t){var tm=parseMonth(t.month||"");if(tm===m&&sp[t.cat]!==undefined)sp[t.cat]+=t.amount;});return sp;}
+
+function fixedBase(){return (S.fixedItems||[]).reduce(function(s,i){return s+(parseFloat(i.a)||0);},0);}
+function familyPlannedUSD(){
+  var f=S.family||{};
+  var t=0;
+  (f.plan||[]).forEach(function(i){t+=(parseFloat(i.a)||0);});
+  (f.items||[]).forEach(function(i){t+=(parseFloat(i.a)||0);});
+  return t;
+}
+function familyLoggedUSD(month){
+  var f=S.family||{};
+  return (f.log||[]).filter(function(l){return parseMonth(l.month)===month;}).reduce(function(s,l){return s+(parseFloat(l.amount)||0);},0);
+}
+function posVal(p){return (p.qty||0)*(p.price||0);}
+function posCost(p){return (p.qty||0)*(p.avg||0);}
+function posPnl(p){return posVal(p)-posCost(p);}
+function posPct(p){var c=posCost(p);return c>0?((posVal(p)-c)/c*100):0;}
+function positionsValue(){return getPositions().reduce(function(s,p){return s+posVal(p);},0);}
+function liveNLV(){return positionsValue()+(S.cashUSD||0);}
+function annualDividends(){
+  return getPositions().reduce(function(s,p){
+    return s+((p.qty>0&&p.dy>0)?posVal(p)*(p.dy/100):0);
+  },0);
+}
+function bucketValue(tickers){
+  var pos=getPositions();
+  return tickers.reduce(function(s,t){
+    var p=pos.find(function(x){return x.t===t;});
+    return s+(p?posVal(p):0);
+  },0);
+}
+function tierValue(tierKey){
+  return getPositions().filter(function(p){return p.tier===tierKey&&p.qty>0;}).reduce(function(s,p){return s+posVal(p);},0);
+}
+
+// ════════════════════════════════════════════════════════════════
+// FIRE — core engine (shared by ring, ladder, gauge)
+// ════════════════════════════════════════════════════════════════
+function calcFire(spend,swr,ret,contrib,rental,divIncome,start){
+  var fn=(spend-rental-(divIncome||0))/(swr/100);
+  if(fn<=0) fn=1;
+  var mr=(ret/100)/12;
+  var v=(start!==undefined?start:liveNLV()), m=0;
+  var v0=v;
+  while(v<fn&&m<600){v=v*(1+mr)+contrib;m++;}
+  return {fn:fn,years:(m/12).toFixed(1),age:Math.round(ageNow()+m/12),pct:Math.min(100,(v0/fn)*100)};
+}
+// Coast: portfolio needed TODAY so pure compounding (zero further contributions)
+// reaches the traditional number by coastAge.
+function calcCoast(tradFn,ret,coastAge){
+  var yrs=Math.max(0,coastAge-ageNow());
+  var need=tradFn/Math.pow(1+ret/100,yrs);
+  var nlv=liveNLV();
+  // years until coast number is reached at current contribution pace
+  var mr=(ret/100)/12, v=nlv, m=0;
+  while(v<need&&m<600){v=v*(1+mr)+S.fire.contrib;m++;}
+  return {fn:need,pct:Math.min(100,(nlv/need)*100),years:(m/12).toFixed(1),age:Math.round(ageNow()+m/12)};
+}
+
+// ════════════════════════════════════════════════════════════════
+// TOAST
+// ════════════════════════════════════════════════════════════════
+var toastTimer=null;
+function toast(msg,err){
+  var el=document.getElementById("toast");
+  el.textContent=msg;el.style.background=err?"#E25B5B":"#34C9A3";el.style.display="block";
+  if(toastTimer) clearTimeout(toastTimer);
+  toastTimer=setTimeout(function(){el.style.display="none";},3000);
+}
+function sheetsPost(body){
+  if(!SCRIPT_URL){ return Promise.reject(new Error("Not connected yet")); }
+  body.token=AUTH_TOKEN;
+  return fetch(SCRIPT_URL,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify(body)}).then(function(r){return r.json();});
+}
+function sheetsAppend(sheet,row){return sheetsPost({sheet:sheet,action:"append",row:row});}
+function sheetsRead(sheet,range){
+  return sheetsPost({sheet:sheet,action:"read",range:range||"A1:Z5000"}).then(function(d){if(d.error)throw new Error(d.error);return d.values||[];});
+}
+function sheetsWrite(sheet,row,rowNum){return sheetsPost({sheet:sheet,action:"write",row:row,rowNum:rowNum});}
+// Master "Positions" 19 cols: A Ticker B Name C Sleeve D Qty E Avg F Px G Target
+// H PctTgt(ignored) I Status J E1 K E2 L E3 M Trim N ExitFloor O Gate P DCAwk Q Note
+// R DivYield S Channel (missing cols tolerated: dy defaults from DY_SEED, channel "")
+var MONTH_ABBR={jan:"01",feb:"02",mar:"03",apr:"04",may:"05",jun:"06",jul:"07",aug:"08",sep:"09",oct:"10",nov:"11",dec:"12"};
+function deriveEv(gate){
+  var g=String(gate||"").trim();
+  if(!g||g==="—") return "";
+  var iso=g.match(/(\d{4})-(\d{2})-(\d{2})/);
+  if(iso) return iso[0]+"·"+g;
+  var m=g.match(/\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+(\d{1,2})\b/i);
+  if(m){
+    // v5.3: no hard-coded year — use this year, or next year when that date is already well behind us
+    var now=new Date(), yr=now.getFullYear();
+    var md=MONTH_ABBR[m[1].toLowerCase()]+"-"+("0"+parseInt(m[2],10)).slice(-2);
+    if(new Date(yr+"-"+md+"T00:00:00").getTime()<now.getTime()-60*86400000) yr+=1;
+    return yr+"-"+md+"·"+g;
+  }
+  return "";
+}
+function cellNum(x){ // "—"→0, "TBD" kept, star stripped
+  var s=String(x==null?"":x).trim();
+  if(s===""||s==="—") return 0;
+  if(s.toUpperCase()==="TBD") return "TBD";
+  var n=parseFloat(s.replace(/\*/g,"").replace(/,/g,""));
+  return isNaN(n)?0:n;
+}
+function cellTxt(x){ var s=String(x==null?"":x).trim(); return (s==="—")?"":s; }
+function pullPositionsData(){
+  return sheetsRead("Positions","A2:S300").then(function(rows){
+    var cur=getPositions();
+    var priceByT={};
+    cur.forEach(function(p){priceByT[p.t]=p.price;});
+    var out=[];
+    rows.forEach(function(r){
+      if(!r[0]||String(r[0]).trim()==="Ticker") return;
+      var t=String(r[0]).trim().toUpperCase();
+      var sleeve=String(r[2]||"").trim();
+      var tier=SLEEVE_MAP[sleeve]||(TIERS.some(function(x){return x.k===sleeve.toLowerCase();})?sleeve.toLowerCase():"con");
+      var raw=String(r[8]||"").trim();
+      var status=RAWSTATUS_MAP[raw.toUpperCase()]||(STATUS_META[raw.toLowerCase()]?raw.toLowerCase():"intact");
+      var avgRaw=String(r[4]==null?"":r[4]);
+      var gate=cellTxt(r[14]);
+      var px=cellNum(r[5]); if(px==="TBD") px=0;
+      // Equity rows keep the phone's last live quote (fresher than the sheet). Crypto rows (ext / "-USD") take the
+      // sheet Px — the sync writes the OKX figure there and the equity feed cannot be trusted for them.
+      var crypto=(tier==="ext"||/-USD$/.test(t));
+      out.push({
+        t:t, name:cellTxt(r[1])||t, tier:tier,
+        qty:parseFloat(r[3])||0, avg:parseFloat(avgRaw.replace(/\*/g,""))||0,
+        avgStar:/\*/.test(avgRaw),
+        price:(px||priceByT[t]||0),
+        target:parseFloat(r[6])||0, status:status, rawStatus:raw,
+        dy:(r.length>17&&String(r[17]).trim()!==""&&!isNaN(parseFloat(r[17])))?parseFloat(r[17]):(DY_SEED[t]||0),
+        ev:deriveEv(gate),
+        e1:cellNum(r[9]), e2:cellNum(r[10]), e3:cellNum(r[11]),
+        trim:cellNum(r[12]), exitFloor:cellNum(r[13]),
+        gate:gate, dcawk:parseFloat(r[15])||0,
+        note:cellTxt(r[16]),
+        channel:(r.length>18)?cellTxt(r[18]):""
+      });
+    });
+    if(!out.length) throw new Error("Positions sheet is empty");
+    S.positions=out;
+    saveState();
+    return out.length;
+  });
+}
+var refreshing=false;
+function refreshPrices(silent){
+  if(refreshing) return;
+  if(!silent&&S.lastManualRefresh&&Date.now()-S.lastManualRefresh<30000){
+    toast("Just refreshed — give it 30 seconds");
+    return;
+  }
+  refreshing=true;
+  if(!silent){S.lastManualRefresh=Date.now();saveState();}
+  var btn=document.getElementById("refresh-btn");
+  if(btn&&!silent){btn.textContent="Refreshing...";btn.disabled=true;}
+  var pos=getPositions();
+  var updated=0, rateLimited=false, authFail=false, failed=[];
+
+  // Quote symbol: equities by ticker; crypto rows as Finnhub crypto pairs (ATOM-USD → BINANCE:ATOMUSDT). If the key's
+  // tier has no crypto quotes the row simply keeps the sheet Px — it is never priced off the equity ticker.
+  function quoteSymbol(p){
+    if(isCrypto(p)) return "BINANCE:"+String(p.t).replace(/-USD$/,"")+"USDT";
+    return p.t;
+  }
+  function fetchQuote(p){
+    return fetch("https://finnhub.io/api/v1/quote?symbol="+encodeURIComponent(quoteSymbol(p))+"&token="+FINNHUB_KEY)
+      .then(function(r){
+        if(r.status===429){rateLimited=true;return null;}
+        if(r.status===401||r.status===403){authFail=true;return null;}
+        return r.json();
+      })
+      .then(function(d){
+        if(d&&d.c&&d.c>0){p.price=isCrypto(p)?Math.round(d.c*10000)/10000:Math.round(d.c*100)/100;updated++;}
+        else if(!rateLimited&&!authFail) failed.push(p);
+      })
+      .catch(function(){failed.push(p);});
+  }
+
+  function runQueue(list,done){
+    var chunks=[];
+    for(var i=0;i<list.length;i+=8) chunks.push(list.slice(i,i+8));
+    function step(idx){
+      if(idx>=chunks.length||rateLimited||authFail){done();return;}
+      Promise.all(chunks[idx].map(fetchQuote)).then(function(){
+        setTimeout(function(){step(idx+1);},1200);
+      });
+    }
+    step(0);
+  }
+
+  function finish(){
+    if(updated>0) S.lastRefresh=Date.now();
+    S.positions=pos;
+    saveState();softRender();
+    if(!silent){
+      if(authFail) toast("Finnhub rejected the API key — it needs replacing",true);
+      else if(rateLimited) toast("Finnhub rate limit — updated "+updated+" of "+pos.length+", retry in a minute",updated===0);
+      else if(failed.length) toast("Prices updated: "+updated+" of "+pos.length+" ("+failed.length+" unavailable)",updated===0);
+      else toast("Prices updated: "+updated+" names");
+    }
+    if(btn){btn.textContent="↻ Refresh live prices";btn.disabled=false;}
+    refreshing=false;
+  }
+
+  runQueue(pos,function(){
+    if(failed.length&&!rateLimited&&!authFail){
+      var retry=failed.slice(); failed=[];
+      setTimeout(function(){ runQueue(retry,finish); },2500);
+    } else finish();
+  });
+}
+function fireLadderRows(){
+  var f=S.fire, div=f.divEnabled?annualDividends():0, nlv=liveNLV();
+  var trad=calcFire(f.spend,f.swr,f.ret,f.contrib,f.rental,div,nlv);
+  var lean=calcFire(f.leanSpend,f.swr,f.ret,f.contrib,f.rental,div,nlv);
+  var fat=calcFire(f.fatSpend,f.swr,f.ret,f.contrib,f.rental,div,nlv);
+  var bar=calcFire(Math.max(f.spend-f.baristaIncome, f.spend*0.2),f.swr,f.ret,f.contrib,f.rental,div,nlv);
+  var coast=calcCoast(trad.fn,f.ret,f.coastAge);
+  return [
+    {k:"coast",name:"Coast",     sub:"stop contributing at "+fK(coast.fn)+" — compounding alone reaches Traditional by age "+f.coastAge, fn:coast.fn, pct:coast.pct, age:coast.age, yrs:coast.years, c:"#5B9BE2"},
+    {k:"lean", name:"Lean",      sub:fK(f.leanSpend)+"/yr Egypt essentials", fn:lean.fn, pct:lean.pct, age:lean.age, yrs:lean.years, c:"#34C9A3"},
+    {k:"bar",  name:"Barista",   sub:fK(f.baristaIncome)+"/yr part-time covers the gap", fn:bar.fn, pct:bar.pct, age:bar.age, yrs:bar.years, c:"#A78BFA"},
+    {k:"trad", name:"Traditional",sub:fK(f.spend)+"/yr base case (Egypt + parents)", fn:trad.fn, pct:trad.pct, age:trad.age, yrs:trad.years, c:"#D4A84B"},
+    {k:"fat",  name:"Fat",       sub:fK(f.fatSpend)+"/yr family-support scenario", fn:fat.fn, pct:fat.pct, age:fat.age, yrs:fat.years, c:"#E879F9"}
+  ];
+}
+function closeMonthCalc(nm){
+  var mt=mType(nm), pc=pSAR(mt), famSAR=familyPlannedUSD()/SAR_USD, ft=fixedBase()+EGP_AXA/S.egpRate+pc+famSAR;
+  var sp=getSpent(nm);
+  var tv=0; for(var k in sp) tv+=sp[k];
+  var to=ft+tv, inv=SALARY-to;
+  var ts=0; CATS.forEach(function(c){ts+=Math.max(0,(S.caps[c.k]||0)-(sp[c.k]||0));});
+  return {nm:nm,sp:sp,ft:ft,to:to,inv:inv,ts:Math.round(ts)};
+}
+var _confirmArm={};
+function confirm2(key,msg){
+  if(_confirmArm[key]&&Date.now()-_confirmArm[key]<4000){ delete _confirmArm[key]; return true; }
+  _confirmArm[key]=Date.now();
+  toast(msg||"Tap again to confirm",true);
+  return false;
+}
+
+// ════════════════════════════════════════════════════════════════
+// v4.2 §5 — ESTATE & LEGAL CHECKLIST (FIRE tab, tap-to-toggle, persisted)
+// ════════════════════════════════════════════════════════════════
+var ESTATE_ITEMS=[
+ ["ibkr","IBKR beneficiary designation","Primary + contingent — do this first","#E25B5B"],
+ ["will","Egyptian will","Designate real-estate beneficiaries with a lawyer","#E8A838"],
+ ["life","Life insurance","Term policy — wife + parents dependent at FIRE","#E8A838"],
+ ["tax","Cross-border tax specialist","Before any FIRE relocation decision","#5B9BE2"],
+ ["title","Property title review","All 3 properties titled correctly for inheritance","#5B9BE2"],
+ ["poa","Power of attorney","Egypt + KSA for management while abroad","#8A93A6"]
+];
+function savGoals(){S.savings=S.savings||{goals:[]};if(!Array.isArray(S.savings.goals))S.savings.goals=[];return S.savings.goals;}
+function savFind(id){return savGoals().find(function(g){return g.id===id;});}
+function savingsPush(manual){
+  if(pushingSavings) return Promise.resolve();
+  pushingSavings=true;
+  var goals=savGoals();
+  var prevLen=S.savSheetLen||goals.length;
+  var rows=[["Goal","Target","TargetDate","Saved","Note","Log"]];
+  goals.forEach(function(g){
+    rows.push([g.name,g.targetUSD||0,g.targetDate||"",g.savedUSD||0,g.note||"",JSON.stringify(g.log||[])]);
+  });
+  var blanks=Math.max(0,prevLen-goals.length)+2;
+  for(var i=0;i<blanks;i++) rows.push(new Array(6).fill(""));
+  var chain=Promise.resolve();
+  rows.forEach(function(r,idx){ chain=chain.then(function(){return sheetsWrite("Savings",r,idx+1);}); });
+  return chain.then(function(){
+    S.savSheetLen=goals.length;saveState();pushingSavings=false;
+    if(manual) toast("Savings synced to Sheets");
+  }).catch(function(e){
+    pushingSavings=false;
+    if(manual) toast("Saved locally — Sheets sync failed",true);
+    throw e;
+  });
+}
+function wState(){ if(!S.wealth||!Array.isArray(S.wealth.schedule)||!S.wealth.schedule.length) S.wealth=defaultWealth(); return S.wealth; }
+function wSchedule(){ return (S.wealth&&S.wealth.schedule)||[]; }
+function wUnpaid(){ return wSchedule().filter(function(r){return !r.paid;}).slice().sort(function(a,b){return a.date.localeCompare(b.date);}); }
+function nextInstallmentRow(){ var u=wUnpaid(); return u.length?u[0]:null; }
+function egpUSD(egp){ return (egp||0)/S.egpRate/SAR_PER_USD; }
+function propPaidEGP(prop){
+  var w=wState();
+  var base=(w.paidToDate&&w.paidToDate[prop])||0;
+  wSchedule().forEach(function(r){ if(r.prop===prop&&r.paid) base+=r.egp; });
+  return base;
+}
+function wealthTotals(){
+  var w=wState(), cash=S.cashUSD||0;
+  var ibkr=positionsValue()+Math.max(0,cash); // margin debit is a liability below — never double-counted
+  var margin=Math.max(0,-cash);
+  var manual=0, reserveUSD=0, gardenUSD=0, gardenEGP=0;
+  (w.assetsManual||[]).forEach(function(a){
+    if(a.link==="reserve") reserveUSD=(S.cashReserve||0)/SAR_PER_USD; // live link — reads the System reserve
+    else if(a.egp!==undefined){ gardenEGP+=(parseFloat(a.egp)||0); gardenUSD+=egpUSD(a.egp); }
+    else manual+=(parseFloat(a.usd)||0);
+  });
+  var solEq=egpUSD(propPaidEGP("SOLANA")), bagEq=egpUSD(propPaidEGP("BAGHUSH"));
+  var props=solEq+bagEq+gardenUSD;
+  var assets=ibkr+manual+reserveUSD+props;
+  var cc=(w.liabilitiesManual||[]).reduce(function(s,l){return s+(parseFloat(l.usd)||0);},0);
+  var instEGP=wSchedule().reduce(function(s,r){return s+(r.paid?0:r.egp);},0);
+  var inst=egpUSD(instEGP);
+  var liab=margin+cc+inst;
+  return {ibkr:ibkr,margin:margin,manual:manual,reserveUSD:reserveUSD,gardenUSD:gardenUSD,gardenEGP:gardenEGP,
+    solEq:solEq,bagEq:bagEq,props:props,assets:assets,cc:cc,instEGP:instEGP,inst:inst,liab:liab,net:assets-liab};
+}
+var pushingWealth=false;
+function wealthPush(manual){
+  if(pushingWealth) return Promise.resolve();
+  pushingWealth=true;
+  var w=wState();
+  var paidMap={};
+  wSchedule().forEach(function(r){ if(r.paid) paidMap[r.id]=r.paidDate||"1"; });
+  var rows=[
+    ["Key","ValueJSON"],
+    ["manualAssets",JSON.stringify(w.assetsManual||[])],
+    ["manualLiabilities",JSON.stringify(w.liabilitiesManual||[])],
+    ["scheduleState",JSON.stringify(paidMap)],
+    ["history",JSON.stringify(w.history||[])]
+  ];
+  var chain=Promise.resolve();
+  rows.forEach(function(r,idx){ chain=chain.then(function(){return sheetsWrite("Wealth",r,idx+1);}); });
+  return chain.then(function(){
+    pushingWealth=false;
+    if(manual) toast("Wealth synced to Sheets");
+  }).catch(function(e){
+    pushingWealth=false;
+    if(manual) toast("Saved locally — Sheets sync failed",true);
+    throw e;
+  });
+}
+function confirmCloseMonth(nm){
+  var c=closeMonthCalc(nm), ts=c.ts;
+  var spIbkr=0,spRoll=0,spSave=0,goalId="";
+  if(ts>0){
+    spIbkr=Math.max(0,parseFloat((document.getElementById("cm-ibkr")||{}).value)||0);
+    spRoll=Math.max(0,parseFloat((document.getElementById("cm-roll")||{}).value)||0);
+    spSave=Math.max(0,parseFloat((document.getElementById("cm-save")||{}).value)||0);
+    goalId=(document.getElementById("cm-goal")||{}).value||"";
+    if(spIbkr+spRoll+spSave>ts+0.01){
+      var err=document.getElementById("cm-err");
+      if(err) err.textContent="Split exceeds the surplus — sum must be ≤ SAR "+fS(ts)+".";
+      toast("Split exceeds the surplus",true);
+      return;
+    }
+    if(spSave>0&&!goalId){toast("Pick a savings goal for the savings portion",true);return;}
+  }
+  var toI=Math.max(0,c.inv)+spIbkr;
+  var split={ibkr:Math.round(spIbkr),roll:Math.round(spRoll),save:Math.round(spSave),goal:goalId};
+  var capsOut=Object.assign({},S.caps); capsOut.__split=split; // extends the caps JSON — backward compatible
+  var rec={month:nm,cats:Object.assign({},c.sp),caps:capsOut,investedSAR:Math.round(toI),investedUSD:Math.round(toI*SAR_USD),surplusSAR:ts,fixedTotal:Math.round(c.ft),totalOut:Math.round(c.to),rollMode:S.rollMode,split:split};
+  S.monthHistory=S.monthHistory.filter(function(h){return String(h.month).trim()!==nm;});
+  S.monthHistory.push(rec);
+  S.monthHistory=dedupeByMonth(S.monthHistory);
+  // Savings portion auto-logs to the chosen goal (USD at the 3.75 peg).
+  if(spSave>0&&goalId){
+    var g=((S.savings&&S.savings.goals)||[]).find(function(x){return x.id===goalId;});
+    if(g){
+      var usd=Math.round(spSave*SAR_USD);
+      g.log=g.log||[];
+      g.log.push({date:toDay(),amount:usd,src:"month-close "+nm});
+      g.savedUSD=(g.savedUSD||0)+usd;
+    }
+  }
+  // Wealth trend — append this month's net-worth snapshot.
+  if(S.wealth){
+    S.wealth.history=(S.wealth.history||[]).filter(function(h){return h.month!==nm;});
+    S.wealth.history.push({month:nm,netWorthUSD:Math.round(wealthTotals().net)});
+  }
+  saveState();cancelCloseMonth();render();
+  var row=[rec.month,rec.investedSAR,rec.investedUSD,rec.surplusSAR,rec.fixedTotal,rec.totalOut,rec.rollMode,JSON.stringify(rec.cats),JSON.stringify(rec.caps)];
+  // Find an existing row for this month and overwrite it; append only if absent.
+  sheetsRead("Monthly","A2:A500").then(function(rows){
+    var rowNum=-1;
+    rows.forEach(function(r,i){ if(r[0]&&String(r[0]).trim()===nm) rowNum=i+2; });
+    if(rowNum>0) return sheetsWrite("Monthly",row,rowNum);
+    return sheetsAppend("Monthly",row);
+  }).then(function(){toast("Month closed and recorded");})
+  .catch(function(){
+    sheetsAppend("Monthly",row).then(function(){toast("Month closed and recorded");}).catch(function(){toast("Closed on this device — Sync when online",true);});
+  });
+}
+</script>
+<script>
+// ════════════════════════════════════════════════════════════════
+// v6 VIEW LAYER — everything below is new in v6.0 (2026-11-15)
+// ════════════════════════════════════════════════════════════════
+var UI={tab:"home",sub:null,book:"all",open:{},check:{t:"",amt:""},saifText:"",hist:"all"};
+try{var _t=sessionStorage.getItem("fc-tab");if(_t)UI.tab=_t;}catch(e){}
+var pushingSavings=false;
+mLabel=function(m){var p=String(m).split("-");var d=new Date(+p[0],(+p[1]||1)-1,1);return isNaN(d.getTime())?String(m):d.toLocaleDateString("en-GB",{month:"short",year:"numeric"});};
+function evTxt(e){return String(e.txt||"").split("|")[0].replace(/^\s*~?\d{4}-\d{2}-\d{2}\s*/,"").trim()||"Dated event";}
+var PAL=["#3987e5","#d95926","#199e70","#c98500","#d55181","#6E7684"];
+function $(id){return document.getElementById(id);}
+function num(x){if(typeof x==="number")return x;var s=String(x==null?"":x).replace(/[$,%\s]/g,"").replace(/−/g,"-");var n=parseFloat(s);return isNaN(n)?0:n;}
+function dateStr(v){
+  var s=String(v==null?"":v).trim(); if(!s) return "";
+  if(/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+  var d=new Date(s); if(isNaN(d.getTime())) return s.slice(0,10);
+  return d.getFullYear()+"-"+("0"+(d.getMonth()+1)).slice(-2)+"-"+("0"+d.getDate()).slice(-2);
+}
+function dShort(iso){var d=new Date(iso+"T00:00:00");return isNaN(d.getTime())?iso:d.toLocaleDateString("en-GB",{day:"numeric",month:"short"});}
+function dDay(iso){var d=new Date(iso+"T00:00:00");return isNaN(d.getTime())?iso:d.toLocaleDateString("en-GB",{weekday:"short",day:"numeric"});}
+function daysTo(iso){var d=new Date(iso+"T00:00:00"),n=new Date();n.setHours(0,0,0,0);return Math.round((d-n)/86400000);}
+function M(n){return S.quiet?"$•••":fU(n);}
+function MK(n){return S.quiet?"$•••":fK(n);}
+function SR(n){return S.quiet?"SAR •••":"SAR "+fS(n);}
+function P2(n){return (n<0?"−$":"$")+Math.abs(n).toLocaleString(undefined,{minimumFractionDigits:n<10&&n>-10?2:2,maximumFractionDigits:2});}
+function pct(n,d){return (n>0?"+":n<0?"−":"")+Math.abs(n).toFixed(d==null?1:d)+"%";}
+function tk(t){return String(t||"").toUpperCase().replace(/[^A-Z0-9.\-]/g,"");}
+function posOf(t){return getPositions().find(function(p){return p.t===t;});}
+function held(){return getPositions().filter(function(p){return p.qty>0;});}
+var IC={
+ chev:'<svg class="chev" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M6 3l5 5-5 5"/></svg>',
+ back:'<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M10 3L5 8l5 5"/></svg>',
+ x:'<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M3 3l10 10M13 3L3 13"/></svg>'
+};
+function head(title,back,tag){
+  return '<div class="row"><button class="back" data-act="go" data-sub="'+(back||"")+'" aria-label="Back">'+IC.back+'</button><h1 class="grow" style="font-size:22px">'+esc(title)+'</h1>'+(tag?'<span class="tag '+(tag==="Auto"?"auto":"you")+'">'+tag+'</span>':'')+'</div>';
+}
+
+// ── charts ───────────────────────────────────────────────────────
+function ringSVG(segs,size,centerTop,centerVal){
+  var tot=segs.reduce(function(s,x){return s+Math.max(0,x.v);},0), r=size/2-10, c=2*Math.PI*r, off=0, out="";
+  if(tot<=0) out='<circle cx="'+size/2+'" cy="'+size/2+'" r="'+r+'" stroke="#232833" stroke-width="16"/>';
+  else segs.forEach(function(s){ if(s.v<=0) return; var len=s.v/tot*c, gap=segs.length>1?2:0;
+    out+='<circle cx="'+size/2+'" cy="'+size/2+'" r="'+r+'" stroke="'+s.c+'" stroke-width="16" stroke-dasharray="'+Math.max(0.5,len-gap).toFixed(2)+' '+c.toFixed(2)+'" stroke-dashoffset="'+(-off).toFixed(2)+'"/>'; off+=len; });
+  return '<div style="position:relative;width:'+size+'px;height:'+size+'px;flex-shrink:0"><svg width="'+size+'" height="'+size+'" viewBox="0 0 '+size+' '+size+'" fill="none" role="img" aria-label="'+esc(centerTop||"Split")+'"><g transform="rotate(-90 '+size/2+' '+size/2+')">'+out+'</g></svg>'
+    +'<div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center"><div class="tiny">'+esc(centerTop||"")+'</div><div class="mono" style="font-size:14px;font-weight:600">'+(centerVal||"")+'</div></div></div>';
+}
+function ringLegend(segs,fmt){
+  return '<div class="grow" style="display:flex;flex-direction:column;gap:7px;font-size:13px">'+segs.filter(function(s){return s.v>0;}).map(function(s){
+    return '<div class="row" style="gap:8px"><span class="dot" style="background:'+s.c+'"></span><span class="grow">'+esc(s.l)+'</span><span class="mono">'+fmt(s.v)+'</span></div>';}).join("")+'</div>';
+}
+// line chart: pts=[{x:number,y:number}], optional goal line {x0,y0,x1,y1}
+function lineSVG(pts,w,h,opt){
+  opt=opt||{}; if(pts.length<2&&!opt.goal) return "";
+  var xs=pts.map(function(p){return p.x;}), ys=pts.map(function(p){return p.y;});
+  if(opt.goal){xs.push(opt.goal.x0,opt.goal.x1);ys.push(opt.goal.y0,opt.goal.y1);}
+  var x0=Math.min.apply(null,xs),x1=Math.max.apply(null,xs),y0=Math.min.apply(null,ys),y1=Math.max.apply(null,ys);
+  var pad=(y1-y0)*0.12||1; y0-=pad; y1+=pad; if(x1===x0) x1=x0+1;
+  function X(v){return 4+(v-x0)/(x1-x0)*(w-12);} function Y(v){return h-6-(v-y0)/(y1-y0)*(h-14);}
+  var d=pts.map(function(p,i){return (i?"L":"M")+X(p.x).toFixed(1)+" "+Y(p.y).toFixed(1);}).join(" ");
+  var g=opt.goal?'<path d="M'+X(opt.goal.x0).toFixed(1)+' '+Y(opt.goal.y0).toFixed(1)+' L'+X(opt.goal.x1).toFixed(1)+' '+Y(opt.goal.y1).toFixed(1)+'" stroke="#ECEAE4" stroke-width="1.5" stroke-dasharray="5 5"/><circle cx="'+X(opt.goal.x1).toFixed(1)+'" cy="'+Y(opt.goal.y1).toFixed(1)+'" r="4" fill="#ECEAE4"/>':"";
+  var last=pts[pts.length-1];
+  return '<svg width="100%" viewBox="0 0 '+w+' '+h+'" fill="none" style="display:block" role="img" aria-label="'+esc(opt.label||"Trend")+'">'+g
+    +(pts.length>1?'<path d="'+d+'" stroke="#D8B15A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>':'')
+    +(last?'<circle cx="'+X(last.x).toFixed(1)+'" cy="'+Y(last.y).toFixed(1)+'" r="5" fill="#D8B15A" stroke="#151920" stroke-width="2"/>':'')+'</svg>';
+}
+// grouped bars: groups=[{l,a,b}]
+function barsSVG(groups,w,h){
+  var mx=Math.max.apply(null,groups.map(function(g){return Math.max(g.a,g.b);}))||1, n=groups.length, gw=w/n, bw=Math.min(18,gw/2-5), out='<path d="M0 '+(h-10)+'H'+w+'" stroke="#3A4250"/>';
+  function bar(x,v,c){var bh=Math.max(v>0?3:0,v/mx*(h-22)); if(bh<=0) return ""; var y=h-10-bh, r=Math.min(4,bh);
+    return '<path d="M'+x+' '+(h-10)+'V'+(y+r)+'a'+r+' '+r+' 0 0 1 '+r+'-'+r+'h'+(bw-2*r)+'a'+r+' '+r+' 0 0 1 '+r+' '+r+'V'+(h-10)+'z" fill="'+c+'"/>';}
+  groups.forEach(function(g,i){var cx=i*gw+gw/2; out+=bar((cx-bw-1).toFixed(1),g.a,PAL[0])+bar((cx+1).toFixed(1),g.b,PAL[1]);});
+  return '<svg width="100%" viewBox="0 0 '+w+' '+h+'" fill="none" style="display:block" role="img" aria-label="Monthly comparison">'+out+'</svg>'
+    +'<div style="display:grid;grid-template-columns:repeat('+n+',minmax(0,1fr));text-align:center;margin-top:4px" class="tiny">'+groups.map(function(g){return '<div>'+esc(g.l)+'</div>';}).join("")+'</div>';
+}
+
+// ── sync: one pull on open, no buttons ───────────────────────────
+var syncing=false;
+function pushPending(){
+  var pend=(S.transactions||[]).filter(function(t){return t.pending;});
+  return pend.reduce(function(ch,t){return ch.then(function(){return sheetsAppend("Transactions",[t.date,t.month,t.cat,t.amount,t.note||""]).then(function(){delete t.pending;}).catch(function(){});});},Promise.resolve());
+}
+function pullTxns(){return sheetsRead("Transactions","A2:E5000").then(function(rows){
+  var out=[];
+  rows.forEach(function(r,i){ if(!r[0]||r[0]==="Date") return; var ds=dateStr(r[0]), amt=parseFloat(r[3]); if(!amt||amt<=0) return;
+    out.push({id:i+1,date:ds,month:parseMonth(r[1]||ds),cat:String(r[2]||"other").trim(),amount:amt,note:String(r[4]||"")}); });
+  var pend=(S.transactions||[]).filter(function(t){return t.pending;});
+  S.transactions=out.concat(pend);
+});}
+function pullSettings(){return sheetsRead("Settings","A2:B400").then(function(rows){
+  rows.forEach(function(r){ if(!r[0]) return; var k=String(r[0]).trim(), v=String(r[1]==null?"":r[1]).trim();
+    try{
+      if(k==="egpRate") S.egpRate=parseFloat(v)||S.egpRate;
+      else if(k==="cashReserve") S.cashReserve=parseFloat(v)||S.cashReserve;
+      else if(k==="cashUSD"){var cu=parseFloat(v);if(!isNaN(cu))S.cashUSD=cu;}
+      else if(k==="caps") S.caps=JSON.parse(v);
+      else if(k==="rollMode") S.rollMode=v;
+      else if(k==="ibkrHistory") S.ibkrHistory=JSON.parse(v);
+      else if(k==="fireSettings") S.fire=Object.assign(S.fire,JSON.parse(v));
+      else if(k==="spouseData") S.spouse=Object.assign(S.spouse,JSON.parse(v));
+      else if(k==="fixedItems"){var fi=JSON.parse(v);if(Array.isArray(fi))S.fixedItems=fi;}
+      else if(k==="familyData"){var fd=JSON.parse(v);if(Array.isArray(fd.plan))S.family.plan=fd.plan;if(Array.isArray(fd.holdings))S.family.holdings=fd.holdings;if(Array.isArray(fd.items))S.family.items=fd.items;}
+      else if(k==="weddingBudget"){var wb=JSON.parse(v);S.wedding=S.wedding||{entries:[]};S.wedding.budget=wb;}
+      else if(k==="lastIbkrSync") S.lastIbkrSync=v;
+    }catch(e){}
+  });
+});}
+function pullMonthly(){return sheetsRead("Monthly","A2:I500").then(function(rows){
+  var hist=[];
+  rows.forEach(function(r){ if(!r[0]) return;
+    var rec={month:parseMonth(r[0]),investedSAR:parseFloat(r[1])||0,investedUSD:parseFloat(r[2])||0,surplusSAR:parseFloat(r[3])||0,fixedTotal:parseFloat(r[4])||0,totalOut:parseFloat(r[5])||0,rollMode:String(r[6]||"ibkr")};
+    try{rec.cats=JSON.parse(r[7]||"{}");}catch(e){rec.cats={};} try{rec.caps=JSON.parse(r[8]||"{}");}catch(e){rec.caps={};}
+    if(rec.caps&&rec.caps.__split) rec.split=rec.caps.__split; hist.push(rec); });
+  if(hist.length){ var byM={}; (S.monthHistory||[]).forEach(function(h){var mk=parseMonth(h.month);if(mk)byM[mk]=h;});
+    dedupeByMonth(hist).forEach(function(h){byM[h.month]=h;}); S.monthHistory=Object.keys(byM).sort().map(function(k){return byM[k];}); }
+});}
+function pullPerf(){return sheetsRead("Performance","A2:C500").then(function(rows){
+  var perf=[]; rows.forEach(function(r){if(r[0]&&String(r[1])!=="deposit")perf.push({month:parseMonth(r[0]),ibkr:parseFloat(r[1])||0,sp:parseFloat(r[2])||0});});
+  if(perf.length) S.perfHistory=dedupeByMonth(perf);
+});}
+function pullFamilyLog(){return sheetsRead("Family","A2:E3000").then(function(rows){
+  var log=[]; (rows||[]).forEach(function(r,i){ if(!r[0]||String(r[0]).trim()==="Date") return; var amt=parseFloat(r[3]); if(!amt||amt<=0) return;
+    var ds=dateStr(r[0]); log.push({id:i+1,date:ds,month:parseMonth(r[1]||ds),item:String(r[2]||"Other").trim(),amount:amt}); });
+  if(log.length) S.family.log=log;
+});}
+function pullFV(){return sheetsRead("Fair Value","A6:P300").then(function(rows){
+  var m={}; rows.forEach(function(r){ var t=tk(r[0]); if(!t||t==="TICKER") return; var fv=num(r[4]);
+    m[t]={group:String(r[1]||"").trim(),canBuy:/^y/i.test(String(r[2]||"")),note:String(r[3]||"").trim(),fv:fv,method:String(r[5]||"").trim(),date:dateStr(r[6]),t1:num(r[7]),t2:num(r[8]),t3:num(r[9])}; });
+  if(Object.keys(m).length) S.fv=m;
+});}
+function pullSeats(){return sheetsRead("Seats & Swings","A2:N300").then(function(rows){
+  var m={}; rows.forEach(function(r){ var t=tk(r[0]); if(!t||String(r[0]).indexOf("/")>=0) return;
+    m[t]={thesis:String(r[1]||""),type:String(r[2]||""),status:String(r[4]||""),reviewed:dateStr(r[7]),trigger:String(r[8]||""),evidence:String(r[9]||""),kill:String(r[10]||""),play:String(r[11]||"")}; });
+  if(Object.keys(m).length) S.seats=m;
+});}
+function pullSaif(){return sheetsRead("SaifBook","A2:L400").then(function(rows){
+  var out=[]; rows.forEach(function(r){ var t=tk(r[0]); if(!t) return;
+    out.push({t:t,cls:String(r[1]||""),status:String(r[2]||""),date:dateStr(r[3]),label:String(r[4]||""),px:num(r[5]),target:String(r[6]||""),exit:String(r[7]||""),size:String(r[8]||""),zone:String(r[9]||""),note:String(r[11]||"")}); });
+  if(out.length) S.saif=out;
+});}
+function pullNlv(){return sheetsRead("NLV History","A2:C3000").then(function(rows){
+  var out=[]; rows.forEach(function(r){ var d=dateStr(r[0]), v=num(r[1]); if(!/^\d{4}-\d{2}-\d{2}$/.test(d)||!v) return; out.push({d:d,nlv:v,cash:num(r[2])}); });
+  out.sort(function(a,b){return a.d.localeCompare(b.d);}); if(out.length) S.nlvHist=out;
+});}
+function pullSavings(){return sheetsRead("Savings","A2:F200").then(function(rows){
+  var out=[]; rows.forEach(function(r,i){ if(!r[0]||String(r[0]).trim()==="Goal") return; var log=[]; try{log=JSON.parse(r[5]||"[]");}catch(e){}
+    out.push({id:"g-sheet-"+i,name:String(r[0]).trim(),emoji:"",targetUSD:parseFloat(r[1])||0,targetDate:(/^\d{4}-\d{2}(-\d{2})?$/.test(String(r[2]||"").trim())?String(r[2]).trim():dateStr(r[2])),savedUSD:parseFloat(r[3])||0,note:String(r[4]||"").trim(),log:Array.isArray(log)?log:[]}); });
+  if(out.length){S.savings=S.savings||{};S.savings.goals=out;S.savSheetLen=out.length;}
+});}
+function pullWealth(){return sheetsRead("Wealth","A1:B30").then(function(rows){
+  if(!S.wealth||Array.isArray(S.wealth)) S.wealth={schedule:[],assetsManual:[],liabilitiesManual:[],history:[]};
+  var w=S.wealth;
+  rows.forEach(function(r){ if(!r[0]||String(r[0]).trim()==="Key") return; var k=String(r[0]).trim(), v=String(r[1]||"").trim();
+    try{
+      if(k==="manualAssets"){var ma=JSON.parse(v);if(Array.isArray(ma))w.assetsManual=ma;}
+      else if(k==="manualLiabilities"){var ml=JSON.parse(v);if(Array.isArray(ml))w.liabilitiesManual=ml;}
+      else if(k==="scheduleState"){var pm=JSON.parse(v)||{};(w.schedule||[]).forEach(function(row){if(pm[row.id]){row.paid=true;row.paidDate=pm[row.id]==="1"?"":pm[row.id];}else{row.paid=false;row.paidDate="";}});}
+      else if(k==="history"){var h=JSON.parse(v);if(Array.isArray(h))w.history=h;}
+    }catch(e){}
+  });
+});}
+function pullAll(manual){
+  if(!SCRIPT_URL||syncing) return Promise.resolve();
+  syncing=true; var errs=[]; paintSync();
+  function safe(fn,name){ try{return fn().catch(function(){errs.push(name);});}catch(e){errs.push(name);return Promise.resolve();} }
+  return pushPending().then(function(){
+    return Promise.all([safe(pullTxns,"expenses"),safe(pullSettings,"settings"),safe(pullMonthly,"past months"),safe(pullPerf,"performance"),safe(pullFamilyLog,"family log"),
+      safe(pullPositionsData,"positions"),safe(pullFV,"fair values"),safe(pullSeats,"exit lines"),safe(pullSaif,"Saif calls"),safe(pullNlv,"net value history"),safe(pullSavings,"savings"),safe(pullWealth,"net worth")]);
+  }).then(function(){
+    var h=S.nlvHist||[]; if(h.length){ S.cashUSD=h[h.length-1].cash; }
+    S.syncErrs=errs; if(errs.length<12) S.lastSync=Date.now();
+    saveState(); syncing=false; softRender();
+    if(manual) toast(errs.length?("Updated, except: "+errs.join(", ")):"Everything is up to date",errs.length>0);
+    if(FINNHUB_KEY&&navigator.onLine) refreshPrices(true);
+  }).catch(function(){ syncing=false; render(); });
+}
+function softRender(){ var a=document.activeElement; if(a&&a.matches&&a.matches("#view input,#view textarea,#view select")){ paintSync(); return; } render(); }
+function syncText(){
+  if(!SCRIPT_URL) return "Not connected to your sheet yet";
+  if(syncing) return "Updating…";
+  var t=S.lastSync?new Date(S.lastSync):null;
+  var s=t?("Updated "+t.toLocaleDateString("en-GB",{day:"numeric",month:"short"})+", "+t.toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"})):"Not updated yet";
+  if(S.syncErrs&&S.syncErrs.length) s+=" · could not read: "+S.syncErrs.join(", ");
+  return s;
+}
+function paintSync(){var el=$("syncline");if(el)el.textContent=syncText();}
+function saveSetting(key,val){ if(!SCRIPT_URL) return; sheetsAppend("Settings",[key,typeof val==="string"?val:JSON.stringify(val)]).catch(function(){toast("Saved on this phone. It will not reach the sheet until you are online.",true);}); }
+
+// ── derived data ─────────────────────────────────────────────────
+function fvOf(t){return (S.fv||{})[t]||null;}
+function seatOf(t){return (S.seats||{})[t]||null;}
+function statusOf(p){
+  var s=seatOf(p.t), raw=(s&&s.status?s.status:(STATUS_META[p.status]||{}).l||"").toLowerCase();
+  var word=raw?raw.charAt(0).toUpperCase()+raw.slice(1):"";
+  var c=/break|broken|exit/.test(raw)?"bad":/weak/.test(raw)?"warn":/strength/.test(raw)?"ok":"mutc";
+  return {word:word,c:c};
+}
+function events(){
+  var out=[], today=toDay();
+  getPositions().forEach(function(p){
+    var best=null;
+    String(p.gate||"").split("|").forEach(function(seg){
+      var m, re=/(\d{4}-\d{2}-\d{2})/g, hit=false;
+      while((m=re.exec(seg))){ hit=true; if(m[1]>=today&&(!best||m[1]<best.d)) best={d:m[1],txt:seg.trim()}; }
+      if(!hit){ var ev=deriveEv(seg.trim()); if(ev){ var d=ev.slice(0,10); if(d>=today&&(!best||d<best.d)) best={d:d,txt:seg.trim()}; } }
+    });
+    if(best) out.push({t:p.t,d:best.d,txt:best.txt,held:p.qty>0,days:daysTo(best.d)});
+  });
+  return out.sort(function(a,b){return a.d.localeCompare(b.d);});
+}
+function isResults(e){return /print|result|earning|\bQ[1-4]\b/i.test(e.txt);}
+function monthNow(){
+  var nm=nowM(), mt=mType(nm), pc=pSAR(mt)||0, famSAR=familyPlannedUSD()/SAR_USD, ft=fixedBase()+(EGP_AXA/S.egpRate||0)+pc+famSAR;
+  var sp=getSpent(nm), tv=0, capTot=0, capLeft=0; for(var k in sp) tv+=sp[k];
+  CATS.forEach(function(c){var cap=S.caps[c.k]||0; capTot+=cap; if(cap>0) capLeft+=cap-(sp[c.k]||0);});
+  var now=new Date(), dim=new Date(now.getFullYear(),now.getMonth()+1,0).getDate(), left=dim-now.getDate()+1;
+  return {nm:nm,sp:sp,tv:tv,ft:ft,to:ft+tv,inv:SALARY-(ft+tv),capTot:capTot,capLeft:capLeft,daysLeft:left,dim:dim,day:now.getDate(),pc:pc,mt:mt,famSAR:famSAR};
+}
+function unclosedMonths(){
+  var nm=nowM(), seen={}; S.transactions.forEach(function(t){var m=parseMonth(t.month);if(m&&m<nm)seen[m]=1;});
+  return Object.keys(seen).filter(function(m){return !S.monthHistory.some(function(h){return String(h.month).trim()===m;});}).sort();
+}
+function needsYou(){
+  var out=[], mn=monthNow(), nlv=liveNLV();
+  held().forEach(function(p){ if(typeof p.exitFloor==="number"&&p.exitFloor>0&&p.price>0&&p.price<p.exitFloor) out.push({sev:3,c:"bad",h:p.t+" is under its floor",s:P2(p.price)+" against a floor of "+P2(p.exitFloor)+". The rule is to sell.",act:"pos",t:p.t}); });
+  unclosedMonths().forEach(function(m){ out.push({sev:2,c:"warn",h:mLabel(m)+" was never closed",s:"Its spending is not in your history yet.",act:"go",sub:"m-history"}); });
+  CATS.forEach(function(c){var cap=S.caps[c.k]||0,s=mn.sp[c.k]||0; if(cap>0&&s>cap) out.push({sev:2,c:"bad",h:c.l+" is over its cap",s:SR(s)+" spent of "+SR(cap)+".",act:"tab",tab:"money"});});
+  var nx=nextInstallmentRow(); if(nx){var dd=daysTo(nx.date); if(dd<=10&&dd>=-30) out.push({sev:2,c:"warn",h:"Instalment "+(dd<0?"overdue":dd===0?"due today":"due in "+dd+" days"),s:(nx.prop||"Property")+" · "+SR(Math.round(nx.egp/S.egpRate))+" on "+dShort(nx.date),act:"go",sub:"p-worth"});}
+  if(nlv>0&&(S.cashUSD||0)<0) out.push({sev:3,c:"bad",h:"You are on margin",s:M(S.cashUSD)+" cash. No buys until it is positive.",act:"go",sub:"check"});
+  else if(nlv>0&&(S.cashUSD||0)/nlv<0.05) out.push({sev:1,c:"warn",h:"Cash is "+((S.cashUSD||0)/nlv*100).toFixed(1)+"% of the book",s:"Your plan keeps 5%. "+M(S.cashUSD)+" on hand.",act:"go",sub:"check"});
+  var ex=held().filter(function(p){return isExitPos(p);}); if(ex.length) out.push({sev:1,c:"warn",h:ex.length+" exit"+(ex.length>1?"s":"")+" not yet done",s:ex.slice(0,5).map(function(p){return p.t;}).join(", ")+(ex.length>5?" and more":""),act:"book",f:"exits"});
+  return out.sort(function(a,b){return b.sev-a.sev;});
+}
+function ytd(){
+  var y=String(new Date().getFullYear()), a=1,b=1,n=0; (S.perfHistory||[]).forEach(function(p){ if(String(p.month).slice(0,4)===y){a*=1+p.ibkr/100;b*=1+p.sp/100;n++;} });
+  var last=(S.perfHistory||[]).filter(function(p){return String(p.month).slice(0,4)===y;}).map(function(p){return p.month;}).sort().pop();
+  return {you:(a-1)*100,sp:(b-1)*100,n:n,last:last};
+}
+function splitSegs(){
+  var g={idx:0,ai:0,sw:0,ch:0,ot:0};
+  held().forEach(function(p){var v=posVal(p); if(p.tier==="etf")g.idx+=v; else if(p.tier==="ai")g.ai+=v; else if(p.tier==="saas")g.sw+=v; else if(p.tier==="con"||p.tier==="hlth")g.ch+=v; else g.ot+=v;});
+  return [{l:"Index and gold",v:g.idx,c:PAL[2]},{l:"AI chips and cloud",v:g.ai,c:PAL[0]},{l:"Software",v:g.sw,c:PAL[1]},{l:"Consumer and health",v:g.ch,c:PAL[4]},{l:"Swings and other",v:g.ot,c:PAL[3]},{l:"Cash",v:Math.max(0,S.cashUSD||0),c:PAL[5]}];
+}
+
+// ── HOME ─────────────────────────────────────────────────────────
+function vHome(){
+  var nlv=liveNLV(), h=S.nlvHist||[], mn=monthNow(), html="";
+  var name=SETTINGS.ownerName?esc(SETTINGS.ownerName.split(" ")[0]):"";
+  html+=topBar('<span class="sub" style="display:block;font-family:var(--body);font-weight:400;letter-spacing:0">'+new Date().toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long"})+'</span>'+(name?"Hello, "+name:"Home"));
+  var chg="";
+  if(h.length>=2){var a=h[h.length-1],b=h[h.length-2],d=a.nlv-b.nlv; chg='<span class="'+(d>=0?"ok":"bad")+'">'+(S.quiet?pct(d/b.nlv*100):(d>=0?"+":"")+fU(d)+" ("+pct(d/b.nlv*100)+")")+'</span> since '+dShort(b.d);}
+  html+='<div><div class="between"><div class="sub">Net value</div><button class="pill'+(S.quiet?" on":"")+'" style="min-height:36px;font-size:13px" data-act="quiet" aria-pressed="'+(S.quiet?"true":"false")+'">'+(S.quiet?"Show amounts":"Hide amounts")+'</button></div><div class="big">'+M(nlv)+'</div><div class="sub" style="margin-top:4px">'+(chg||"Cash "+M(S.cashUSD)+" · "+held().length+" positions")+'</div>';
+  var cut=h.slice(-90);
+  if(cut.length>=3) html+='<div style="margin-top:10px">'+lineSVG(cut.map(function(r,i){return {x:i,y:r.nlv};}),350,70,{label:"Net value, last "+cut.length+" trading days"})+'<div class="tiny">Last '+cut.length+' days recorded</div></div>';
+  else html+='<div class="tiny" style="margin-top:8px">The trend line appears after three daily updates.</div>';
+  html+='</div>';
+  // results night
+  var ev=events().filter(function(e){return e.held&&e.days<=2&&isResults(e);});
+  ev.slice(0,2).forEach(function(e){ var st=seatOf(e.t), kills=st&&st.kill?st.kill.split(";").map(function(x){return x.trim();}).filter(Boolean):[];
+    html+='<div class="card" style="border:1px solid var(--brass)"><div class="between"><div class="mono brass" style="font-weight:600">'+esc(e.t)+' reports '+(e.days===0?"today":e.days===1?"tomorrow":dDay(e.d))+'</div><span class="chip brass">Results</span></div>'
+      +'<div style="font-size:14px;margin-top:8px">No adds before the numbers. Decide after, against the lines you wrote.</div>'
+      +(kills.length?'<ul style="margin:10px 0 0;padding-left:18px;font-size:13px;color:var(--mut)">'+kills.slice(0,4).map(function(k){return '<li style="margin-bottom:4px">'+esc(k)+'</li>';}).join("")+'</ul>':'')
+      +'<button class="btn ghost sm full" style="margin-top:12px" data-act="pos" data-t="'+tk(e.t)+'">Open '+esc(e.t)+'</button></div>'; });
+  // needs you
+  var ny=needsYou();
+  html+='<div><div class="between" style="margin-bottom:8px"><h2>Needs you</h2><span class="sub">'+(ny.length?ny.length+" item"+(ny.length>1?"s":""):"")+'</span></div>';
+  if(!ny.length) html+='<div class="card sub">Nothing needs a decision today.</div>';
+  else html+='<div class="card list" style="padding:4px 16px">'+ny.slice(0,4).map(function(n){
+    return '<button class="li" data-act="'+n.act+'"'+(n.t?' data-t="'+n.t+'"':'')+(n.sub?' data-sub="'+n.sub+'"':'')+(n.tab?' data-tab="'+n.tab+'"':'')+(n.f?' data-f="'+n.f+'"':'')+'><span class="dot" style="background:var(--'+(n.c==="bad"?"bad":"warn")+')"></span><span class="grow"><span style="display:block;font-size:15px">'+esc(n.h)+'</span><span class="n" style="display:block;white-space:normal">'+esc(n.s)+'</span></span>'+IC.chev+'</button>';}).join("")+'</div>'
+    +(ny.length>4?'<div class="tiny" style="margin-top:6px">'+(ny.length-4)+' more, lower priority.</div>':'');
+  html+='</div>';
+  // this week
+  var wk=events().filter(function(e){return e.days<=10;}).slice(0,4);
+  html+='<div><div class="between" style="margin-bottom:8px"><h2>Coming up</h2><button class="sub" style="background:none;border:0;min-height:44px" data-act="go" data-sub="x-dates">All dates</button></div>';
+  html+=wk.length?'<div class="list">'+wk.map(function(e){return '<button class="li" data-act="pos" data-t="'+tk(e.t)+'"><span class="mono brass" style="width:62px;font-weight:600;font-size:13px">'+dDay(e.d)+'</span><span class="grow"><span class="t">'+esc(e.t)+'</span><span class="n" style="display:block">'+esc(evTxt(e))+'</span></span>'+IC.chev+'</button>';}).join("")+'</div>':'<div class="sub">No dated events in the next ten days.</div>';
+  html+='</div>';
+  // month + plan snapshot
+  var goal=800000, gp=Math.min(100,nlv/goal*100);
+  html+='<div class="grid2"><button class="card" style="border:0;text-align:left" data-act="tab" data-tab="money"><div class="k">Left to spend</div><div class="v" style="margin-top:4px">'+(mn.capTot>0?SR(Math.max(0,mn.capLeft)):"Set caps")+'</div><div class="tiny" style="margin-top:4px">'+mn.daysLeft+' days left</div></button>'
+    +'<button class="card" style="border:0;text-align:left" data-act="tab" data-tab="plan"><div class="k">Toward $800K</div><div class="v" style="margin-top:4px">'+gp.toFixed(0)+'%</div><div class="bar" style="margin-top:8px"><i style="width:'+gp+'%;background:var(--brass)"></i></div></button></div>';
+  html+='<div id="syncline">'+esc(syncText())+'</div>';
+  return html;
+}
+
+// ── BOOK ─────────────────────────────────────────────────────────
+function bookFilter(p){
+  var f=UI.book, fv=fvOf(p.t);
+  if(f==="seats") return fv?fv.group==="Seat":(["ai","saas","con","hlth","moon"].indexOf(p.tier)>=0);
+  if(f==="swings") return p.tier==="swg"||p.tier==="exit";
+  if(f==="passive") return p.tier==="etf"||isCrypto(p);
+  if(f==="exits") return isExitPos(p);
+  return true;
+}
+function vBook(){
+  var list=held().filter(bookFilter).sort(function(a,b){return posVal(b)-posVal(a);});
+  var tot=list.reduce(function(s,p){return s+posVal(p);},0), pnl=list.reduce(function(s,p){return s+posPnl(p);},0);
+  var html=topBar("Book",'<button class="btn sm" data-act="go" data-sub="check">Check a buy</button>');
+  html+='<div class="seg" role="tablist">'+[["all","All"],["seats","Seats"],["swings","Swings"],["passive","Index"]].map(function(x){return '<button data-act="bookf" data-f="'+x[0]+'" class="'+(UI.book===x[0]?"on":"")+'">'+x[1]+'</button>';}).join("")+'</div>';
+  if(UI.book==="exits") html+='<div class="between"><span class="sub">Showing exits not yet done</span><button class="pill" data-act="bookf" data-f="all">Show all</button></div>';
+  html+='<div class="between"><div><div class="sub">'+list.length+' positions</div><div class="mono" style="font-size:22px;font-weight:600">'+M(tot)+'</div></div><div style="text-align:right"><div class="sub">Against cost</div><div class="mono '+(pnl>=0?"ok":"bad")+'" style="font-size:17px;font-weight:600">'+(S.quiet?"•••":(pnl>=0?"+":"")+fU(pnl))+'</div></div></div>';
+  if(!getPositions().length) html+='<div class="card sub">No positions on this phone yet. They load from your sheet when the app updates.</div>';
+  html+='<div class="list">'+list.map(function(p){
+    var st=statusOf(p), pp=posPct(p);
+    return '<button class="li" data-act="pos" data-t="'+tk(p.t)+'"><span class="grow"><span class="t">'+esc(p.t)+'</span><span class="n" style="display:block">'+esc(p.name)+(st.word&&st.c!=="mutc"?' · <span class="'+st.c+'">'+esc(st.word)+'</span>':'')+'</span></span>'
+      +'<span style="text-align:right"><span class="mono" style="display:block;font-weight:600">'+M(posVal(p))+'</span><span class="mono '+(pp>=0?"ok":"bad")+'" style="font-size:13px">'+(p.avg>0?pct(pp):"")+'</span></span>'+IC.chev+'</button>';
+  }).join("")+'</div>';
+  var un=getPositions().filter(function(p){return !(p.qty>0);});
+  if(un.length&&UI.book==="all") html+='<details class="x"><summary><span>On the plan, not held</span><span class="r">'+un.length+'</span></summary><div>'+un.map(function(p){var f=fvOf(p.t);return '<div class="between" style="padding:6px 0"><span class="mono" style="color:var(--tx)">'+esc(p.t)+'</span><span>'+(f&&f.t1?"first buy level "+P2(f.t1):esc(p.name))+'</span></div>';}).join("")+'</div></details>';
+  html+='<div id="syncline">'+esc(syncText())+'</div>';
+  return html;
+}
+function fvBar(p,f){
+  var vals=[p.price,f.fv]; if(p.avg>0) vals.push(p.avg); if(f.t3>0) vals.push(f.t3);
+  var lo=Math.min.apply(null,vals)*0.9, hi=Math.max.apply(null,vals)*1.08; function X(v){return Math.max(0,Math.min(100,(v-lo)/(hi-lo)*100));}
+  var zl=f.t3>0?X(f.t3):0, zr=X(f.fv), under=(p.price-f.fv)/f.fv*100;
+  var txt=p.price<=f.fv?("Price is "+Math.abs(under).toFixed(0)+"% under fair value."):("Price is "+under.toFixed(0)+"% above fair value. No buy at this price.");
+  return '<div><div class="between" style="font-size:13px;margin-bottom:10px"><div>Price against fair value</div><div class="mutc">'+(f.t3>0?P2(f.t3)+" to ":"")+P2(f.fv)+'</div></div>'
+    +'<div style="position:relative;height:10px;border-radius:5px;background:var(--line)"><div style="position:absolute;left:'+zl+'%;width:'+Math.max(2,zr-zl)+'%;height:10px;background:var(--band);border-radius:5px"></div>'
+    +(p.avg>0?'<div title="Your cost" style="position:absolute;left:calc('+X(p.avg)+'% - 1px);top:-4px;width:0;height:18px;border-left:2px dashed var(--mut)"></div>':'')
+    +'<div title="Price" style="position:absolute;left:calc('+X(p.price)+'% - 2px);top:-5px;width:4px;height:20px;border-radius:2px;background:var(--tx)"></div></div>'
+    +'<div class="lg" style="margin-top:10px"><span><i style="width:4px;height:12px;border-radius:2px;background:var(--tx)"></i>Price '+P2(p.price)+'</span>'+(p.avg>0?'<span><i style="width:0;height:12px;border-left:2px dashed var(--mut)"></i>Your cost '+P2(p.avg)+'</span>':'')+'<span><i class="dot" style="background:var(--band)"></i>Buy levels up to fair value</span></div>'
+    +'<div class="tiny" style="margin-top:8px"><span class="'+(p.price<=f.fv?"ok":"bad")+'">'+txt+'</span> '+esc(f.method)+(f.date?", set "+dShort(f.date):"")+'.</div></div>';
+}
+function openPos(t){
+  var p=posOf(t); if(!p) return; var f=fvOf(t), s=seatOf(t), st=statusOf(p), pnl=posPnl(p), html='';
+  html+='<div class="grab"></div><div class="between" style="align-items:flex-start"><div><div class="mono" style="font-size:28px;font-weight:600">'+esc(p.t)+'</div><div style="font-size:13px;font-weight:600" class="'+st.c+'">'+esc(st.word||"")+(s&&s.reviewed?' · reviewed '+dShort(s.reviewed):'')+'</div><div class="sub">'+esc(p.name)+'</div></div><button class="back" style="background:var(--bg)" data-act="closeSheet" aria-label="Close">'+IC.x+'</button></div>';
+  html+='<div class="grid3"><div><div class="k">Price</div><div class="v">'+(p.price?P2(p.price):"—")+'</div></div><div><div class="k">You hold</div><div class="v">'+(p.qty>0?(S.quiet?"•••":(+p.qty.toFixed(2)).toLocaleString()+" sh"):"None")+'</div></div><div><div class="k">Against cost</div><div class="v '+(pnl>=0?"ok":"bad")+'">'+(p.qty>0&&p.avg>0?(S.quiet?pct(posPct(p)):fK(pnl)):"—")+'</div></div></div>';
+  if(f&&f.fv>0&&p.price>0) html+=fvBar(p,f); else html+='<div class="sub">No fair value on file for this one. The rule is no buy until there is.</div>';
+  if(p.target>0&&p.qty>0){ var use=posCost(p)/p.target*100, c=use>100?"bad":use>85?"warn":"ok";
+    html+='<div><div class="between" style="font-size:13px;margin-bottom:8px"><div>Money in, against your line</div><div class="'+c+'" style="font-weight:600">'+use.toFixed(0)+'%</div></div><div style="position:relative"><div class="bar" style="height:10px"><i style="height:10px;width:'+Math.min(100,use>100?100:use)+'%;background:var(--'+c+')"></i></div>'+(use>100?'<div style="position:absolute;left:calc('+(100/use*100)+'% - 1px);top:-4px;width:2px;height:18px;background:var(--tx)"></div>':'')+'</div><div class="tiny" style="margin-top:8px">Line is '+MK(p.target)+' at cost. You have put in '+MK(posCost(p))+'.'+(use>100?" The mark shows where 100% sits.":"")+'</div></div>'; }
+  var kills=s&&s.kill?s.kill.split(";").map(function(x){return x.trim();}).filter(Boolean):[];
+  html+='<div>';
+  if(kills.length) html+='<details class="x" open><summary><span>Exit lines</span><span class="r">'+kills.length+' written</span></summary><div><ul>'+kills.map(function(k){return '<li>'+esc(k)+'</li>';}).join("")+'</ul></div></details>';
+  if(typeof p.exitFloor==="number"&&p.exitFloor>0) html+='<details class="x"><summary><span>Price floor</span><span class="r '+(p.price<p.exitFloor?"bad":"")+'">'+P2(p.exitFloor)+'</span></summary><div>'+(p.price<p.exitFloor?"Price is under the floor. The rule is to sell now.":"Under this price the rule is to sell. Price is "+((p.price-p.exitFloor)/p.exitFloor*100).toFixed(0)+"% above it.")+'</div></details>';
+  if(s&&s.trigger) html+='<details class="x"><summary><span>What to watch next</span><span class="r">Open</span></summary><div>'+esc(s.trigger)+'</div></details>';
+  if(s&&s.play) html+='<details class="x"><summary><span>The plan for it</span><span class="r">Open</span></summary><div>'+esc(s.play)+'</div></details>';
+  if(s&&(s.thesis||s.evidence)) html+='<details class="x"><summary><span>Why you own it</span><span class="r">Open</span></summary><div>'+esc(s.thesis)+(s.evidence?'<br><br>'+esc(s.evidence):'')+'</div></details>';
+  if(f&&f.t1>0) html+='<details class="x"><summary><span>Buy levels</span><span class="r">'+(f.canBuy?"Buying allowed":"No adds")+'</span></summary><div>First '+P2(f.t1)+(f.t2?", second "+P2(f.t2):"")+(f.t3?", third "+P2(f.t3):"")+'.'+(f.note?'<br>'+esc(f.note):'')+'</div></details>';
+  var sf=(S.saif||[]).filter(function(x){return x.t===t||x.t+"-USD"===t;})[0];
+  if(sf) html+='<details class="x"><summary><span>Saif’s last call</span><span class="r">'+esc(sf.label||sf.status)+(sf.date?" · "+dShort(sf.date):"")+'</span></summary><div>'+[sf.target&&("Target: "+sf.target),sf.exit&&("Exit: "+sf.exit),sf.zone,sf.note].filter(Boolean).map(esc).join("<br>")+'</div></details>';
+  if(p.note||p.gate) html+='<details class="x"><summary><span>Notes from the sheet</span><span class="r">Open</span></summary><div>'+esc(p.gate||"")+(p.gate&&p.note?"<br><br>":"")+esc(p.note||"")+'</div></details>';
+  html+='</div>';
+  var e=events().filter(function(x){return x.t===t;})[0];
+  if(e) html+='<div style="background:var(--bg);border-radius:16px;padding:14px;display:flex;gap:12px;align-items:center"><div class="mono brass" style="font-weight:600;white-space:nowrap">'+dDay(e.d)+'</div><div style="font-size:14px">'+esc(evTxt(e))+'</div></div>';
+  html+='<button class="btn ghost full" data-act="checkT" data-t="'+tk(t)+'">Check a buy in '+esc(p.t)+'</button>';
+  $("sheet-in").innerHTML=html; $("sheet").classList.add("on"); $("sheet-in").scrollTop=0;
+}
+function closeSheet(){ $("sheet").classList.remove("on"); }
+
+// ── CHECK A BUY ──────────────────────────────────────────────────
+function vCheck(){
+  var c=UI.check, all=getPositions().map(function(p){return p.t;}); Object.keys(S.fv||{}).forEach(function(t){if(all.indexOf(t)<0)all.push(t);}); all.sort();
+  var html=head("Check a buy","t-book");
+  html+='<div class="sub">Runs your own rules against one buy before you place it. It reads; it never places an order.</div>';
+  html+='<div class="card" style="display:flex;flex-direction:column;gap:12px"><div><label class="f" for="ck-t">Which one</label><select id="ck-t" data-chg="ckT"><option value="">Choose a ticker</option>'+all.map(function(t){return '<option'+(t===c.t?" selected":"")+'>'+esc(t)+'</option>';}).join("")+'</select></div>'
+    +'<div><label class="f" for="ck-a">How much, in dollars</label><input id="ck-a" class="amt" type="text" inputmode="decimal" placeholder="0" value="'+esc(c.amt)+'" data-chg="ckA"></div></div>';
+  var amt=num(c.amt), t=c.t; if(!t||!(amt>0)){ html+='<div class="sub">Pick a ticker and an amount to see the checks.</div>'; return html; }
+  var p=posOf(t)||{t:t,qty:0,avg:0,price:0,target:0,tier:"",name:t}, f=fvOf(t), nlv=liveNLV(), cash=S.cashUSD||0, rows=[], fail=0, warn=0;
+  function add(state,h,s){ if(state==="fail")fail++; if(state==="warn")warn++; rows.push({st:state,h:h,s:s}); }
+  if(!f||!(f.fv>0)) add("fail","No fair value on file","Your 6 Nov rule: state the fair value, method and date before any buy.");
+  else if(!(p.price>0)) add("warn","No live price","Fair value is "+P2(f.fv)+" but the app has no price for "+t+" yet.");
+  else if(p.price>f.fv) add("fail","Above fair value",P2(p.price)+" against "+P2(f.fv)+" ("+esc(f.method)+", "+dShort(f.date)+"). Above fair value is no buy, whoever recommended it.");
+  else add("pass","At or under fair value",P2(p.price)+" against "+P2(f.fv)+", "+Math.abs((p.price-f.fv)/f.fv*100).toFixed(0)+"% under."+(f.t1>0?(p.price<=f.t1?" It is at or under the first buy level "+P2(f.t1)+".":" It has not reached the first buy level "+P2(f.t1)+" yet."):""));
+  if(f&&f.fv>0&&p.price>0&&p.price<=f.fv&&f.t1>0&&p.price>f.t1){ warn++; rows[rows.length-1].st="warn"; }
+  if(p.tier==="swg"||p.tier==="exit"||isExitPos(p)) add("fail","On the run-off list","Nothing on that list takes new money.");
+  else if(f&&!f.canBuy) add("fail","Marked no adds",f.note||"The plan note says no buying for now.");
+  else if(f) add("pass","Buying is allowed on the plan",f.note||"");
+  if(p.target>0){ var after=posCost(p)+amt; if(after>p.target*1.001) add("fail","Goes over your line","Money in would be "+fK(after)+" against a line of "+fK(p.target)+". Room left: "+fK(Math.max(0,p.target-posCost(p)))+"."); else add("pass","Fits inside your line",fK(after)+" of "+fK(p.target)+" after this buy."); }
+  else add("warn","No line set for this one","A new name needs its dossier and a line before the first dollar.");
+  if(f&&f.group==="Story"&&nlv>0){ var cap=nlv*0.005, tot=posCost(p)+amt; if(tot>cap) add("fail","Over the pre-profit cap","Not-yet-profitable names are capped at 0.5% of the book ("+fK(cap)+"). This would make "+fK(tot)+"."); else add("pass","Inside the pre-profit cap",fK(tot)+" of "+fK(cap)+"."); }
+  if(isSingleStock(p)&&nlv>0){ var mv=posVal(p)+amt; if(mv/nlv*100>SINGLE_CAP) add("fail","Over 5% of the book",(mv/nlv*100).toFixed(1)+"% after this buy."); }
+  if(isSingleStock(p)&&amt<2000) add("warn","Under the $2,000 minimum","Your rule sets $2,000 as the smallest single-stock order.");
+  if(cash<0) add("fail","You are on margin","Cash is "+fU(cash)+". No buys until it is positive.");
+  else if(amt>cash) add("fail","Not enough cash","You have "+fU(cash)+". This buy needs "+fU(amt)+".");
+  else { var left=cash-amt, lp=nlv>0?left/nlv*100:0; add(lp<5?"warn":"pass",lp<5?"Leaves cash under 5%":"Cash is fine",fU(left)+" left after the buy, "+lp.toFixed(1)+"% of the book."+(lp<5?" Your plan keeps 5%.":"")); }
+  var e=events().filter(function(x){return x.t===t&&x.days<=7&&isResults(x);})[0];
+  if(e) add("fail","Results in "+(e.days===0?"hours":e.days+" day"+(e.days>1?"s":"")),"Nothing is bought ahead of its numbers. "+dShort(e.d)+".");
+  var verdict=fail?{c:"bad",h:"Do not buy",s:fail+" rule"+(fail>1?"s":"")+" say no."}:warn?{c:"warn",h:"Allowed, with a caution",s:"Read the amber lines first."}:{c:"ok",h:"Clear to buy",s:"Every rule passes."};
+  html+='<div class="card" style="border:1px solid var(--'+verdict.c+')"><div class="'+verdict.c+'" style="font-family:var(--head);font-size:20px;font-weight:700">'+verdict.h+'</div><div class="sub">'+verdict.s+'</div></div>';
+  html+='<div class="card" style="padding:4px 16px">'+rows.map(function(r){var col=r.st==="pass"?"ok":r.st==="warn"?"warn":"bad";return '<div class="check"><div class="ic" style="background:var(--'+col+')" aria-hidden="true">'+(r.st==="pass"?"✓":r.st==="warn"?"!":"✕")+'</div><div><div style="font-weight:600">'+esc(r.h)+'</div><div class="sub">'+esc(r.s)+'</div></div></div>';}).join("")+'</div>';
+  // size if wrong
+  if(p.price>0){ var sh=amt/p.price, floor=(typeof p.exitFloor==="number"&&p.exitFloor>0&&p.exitFloor<p.price)?p.exitFloor:(f&&f.t3>0&&f.t3<p.price?f.t3:p.price*0.7);
+    var why=(typeof p.exitFloor==="number"&&p.exitFloor>0&&p.exitFloor<p.price)?"your floor":(f&&f.t3>0&&f.t3<p.price?"the third buy level":"a 30% fall"), loss=sh*(p.price-floor), totLoss=(p.qty+sh)*(p.price-floor);
+    html+='<div class="card"><h2 style="margin-bottom:8px">If you are wrong</h2><div style="font-size:14px">At '+P2(floor)+' ('+why+') this buy loses <span class="mono bad" style="font-weight:600">'+fU(loss)+'</span>.</div>'
+      +(p.qty>0?'<div class="sub" style="margin-top:6px">With what you already hold, the whole position would be down '+fU(totLoss)+' from today, '+(nlv>0?(totLoss/nlv*100).toFixed(1):"0")+'% of the book.</div>':'<div class="sub" style="margin-top:6px">That is '+(nlv>0?(loss/nlv*100).toFixed(2):"0")+'% of the book.</div>')+'</div>'; }
+  return html;
+}
+// safer wealth state than v5 (never wipes manual assets when the schedule is empty)
+function wState(){
+  if(!S.wealth||Array.isArray(S.wealth)) S.wealth={schedule:[],assetsManual:[],liabilitiesManual:[],history:[]};
+  ["schedule","assetsManual","liabilitiesManual","history"].forEach(function(k){if(!Array.isArray(S.wealth[k]))S.wealth[k]=[];});
+  return S.wealth;
+}
+function cancelCloseMonth(){ UI.closeM=null; }
+function topBar(title,extra){
+  return '<div class="between"><h1>'+title+'</h1><div class="row" style="gap:8px">'+(extra||"")+'<button class="back" data-act="go" data-sub="more" aria-label="More: family, dates, rules, settings"><svg width="18" height="18" viewBox="0 0 18 18" fill="currentColor" aria-hidden="true"><circle cx="3.5" cy="9" r="1.6"/><circle cx="9" cy="9" r="1.6"/><circle cx="14.5" cy="9" r="1.6"/></svg></button></div></div>';
+}
+
+// ── CALLS ────────────────────────────────────────────────────────
+function gate(t,labelTxt,pxAtPost){
+  var lab=String(labelTxt||"").toLowerCase(), p=posOf(t)||posOf(t+"-USD"), f=fvOf(t), px=(p&&p.price)||pxAtPost||0, hold=p&&p.qty>0;
+  if(/exit|sell|closed|take profit/.test(lab)) return {c:hold?"warn":"mutc",w:hold?"Exit called, you still hold":"Exit called",s:hold?"His exit is the exit for names you copied from him.":""};
+  if(/info|not buying/.test(lab)) return {c:"mutc",w:"Information only",s:"He is not buying it himself."};
+  if(/hold/.test(lab)&&!/buy/.test(lab)) return {c:"mutc",w:"Hold call",s:"No new money either way."};
+  if(!f||!(f.fv>0)) return {c:"mutc",w:"No fair value yet",s:"Your rule: no buy until a fair value is on file."};
+  if(!(px>0)) return {c:"mutc",w:"No price",s:"Fair value is "+P2(f.fv)+"."};
+  var d=(px-f.fv)/f.fv*100;
+  if(px>f.fv) return {c:"bad",w:"Fails",s:P2(px)+" against "+P2(f.fv)+" fair value. "+d.toFixed(0)+"% above."};
+  if(!f.canBuy||(p&&(p.tier==="swg"||p.tier==="exit"))) return {c:"warn",w:"Cheap, but no adds",s:P2(px)+" against "+P2(f.fv)+". "+(f.note||"On the run-off list.")};
+  return {c:"ok",w:"Passes",s:P2(px)+" against "+P2(f.fv)+" fair value. "+Math.abs(d).toFixed(0)+"% under."};
+}
+function parseSaif(text){
+  var known={}; getPositions().forEach(function(p){known[p.t.replace(/-USD$/,"")]=1;}); Object.keys(S.fv||{}).forEach(function(t){known[t]=1;}); (S.saif||[]).forEach(function(x){known[x.t]=1;});
+  var found=[], re=/\$?\b([A-Z]{2,5})\b/g, m; while((m=re.exec(text))){ var t=m[1]; if((m[0].charAt(0)==="$"||known[t])&&found.indexOf(t)<0) found.push(t); }
+  var low=text.toLowerCase(), label=/exit|sell|take profit|خروج|بيع/.test(low)?"Exit":/strong buy|buy|accumulat|add|شراء/.test(low)?(/strong/.test(low)?"Strong buy":"Buy"):/hold|احتفاظ/.test(low)?"Hold only":"";
+  var tg=low.match(/target[^0-9$]{0,20}\$?\s?(\d+(?:\.\d+)?)/);
+  return {tickers:found.slice(0,6),label:label,target:tg?tg[1]:""};
+}
+function callCard(t,label,date,g,extra,delIdx){
+  return '<div class="card"><div class="between"><div class="mono" style="font-weight:600;font-size:17px">'+esc(t)+'</div><div class="chip '+g.c+'">'+esc(g.w)+'</div></div>'
+    +'<div style="font-size:14px;margin-top:6px">'+esc(label||"Call")+(date?" · "+dShort(date):"")+'</div>'+(g.s?'<div class="sub" style="margin-top:2px">'+esc(g.s)+'</div>':'')+(extra?'<div class="tiny" style="margin-top:6px">'+esc(extra)+'</div>':'')
+    +(delIdx!=null?'<button class="tiny" style="background:none;border:0;min-height:44px;padding:0;text-decoration:underline" data-act="saifDel" data-i="'+delIdx+'">Remove</button>':'')+'</div>';
+}
+function vCalls(){
+  var html=topBar("Calls")+'<div class="sub">Each Saif call, checked against your fair value the moment it lands.</div>';
+  html+='<div class="card"><label class="f" for="saif-tx">Paste a post from Saif</label><textarea id="saif-tx" data-chg="saifText" placeholder="Paste the text of his post here">'+esc(UI.saifText)+'</textarea><button class="btn full" style="margin-top:10px" data-act="saifCheck">Check it against my rules</button>';
+  if(UI.saifRes){ var r=UI.saifRes;
+    if(!r.tickers.length) html+='<div class="sub" style="margin-top:12px">No ticker found in that text. Type the ticker in capitals, for example NVDA, and check again.</div>';
+    else html+='<div style="display:flex;flex-direction:column;gap:10px;margin-top:12px">'+r.tickers.map(function(t){var g=gate(t,r.label,0);return '<div style="background:var(--bg);border-radius:14px;padding:12px"><div class="between"><span class="mono" style="font-weight:600">'+esc(t)+'</span><span class="chip '+g.c+'">'+esc(g.w)+'</span></div><div class="sub" style="margin-top:4px">'+(r.label?"Read as: "+esc(r.label)+". ":"Could not tell if it is a buy, hold or exit. ")+esc(g.s)+'</div></div>';}).join("")
+      +'<div class="row"><button class="btn ghost sm grow" data-act="saifSave">Keep on this phone</button><button class="btn ghost sm grow" data-act="saifCopy">Copy for Claude</button></div><div class="tiny">Kept calls stay on this phone. To add one to your records, paste it into the chat.</div></div>';
+  }
+  html+='</div>';
+  var loc=S.saifLocal||[], list=(S.saif||[]).slice().sort(function(a,b){return String(b.date).localeCompare(String(a.date));});
+  var show=UI.open.saifAll?list:list.slice(0,6);
+  html+='<div style="display:flex;flex-direction:column;gap:10px">'+loc.map(function(x,i){return callCard(x.t,x.label+" (pasted)",x.date,gate(x.t,x.label,0),"",i);}).join("")
+    +show.map(function(x){return callCard(x.t,x.label||x.status,x.date,gate(x.t,(x.label||"")+" "+(/closed/i.test(x.status)?"closed":"")+(/info/i.test(x.status)?" info":""),x.px),[x.target&&("Target: "+x.target),x.zone].filter(Boolean).join(" · "));}).join("")+'</div>';
+  if(!list.length&&!loc.length) html+='<div class="card sub">His calls load from your sheet when the app updates.</div>';
+  if(list.length>6) html+='<button class="btn ghost full" data-act="toggle" data-k="saifAll">'+(UI.open.saifAll?"Show fewer":"Show all "+list.length)+'</button>';
+  // score
+  var y=ytd(), mx=Math.max(Math.abs(y.you),Math.abs(y.sp),1);
+  html+='<div><h2 style="margin:4px 0 10px">You against the index, this year</h2>';
+  if(!y.n) html+='<div class="sub">Monthly returns have not loaded yet.</div>';
+  else { html+='<div style="display:flex;flex-direction:column;gap:10px;font-size:14px">'+[["You",y.you,PAL[0]],["S&P 500",y.sp,"#A3AAB8"]].map(function(r){return '<div class="row" style="gap:10px"><div style="width:60px">'+r[0]+'</div><div class="grow" style="height:16px"><div style="width:'+Math.max(2,Math.abs(r[1])/mx*100)+'%;height:16px;border-radius:0 4px 4px 0;background:'+r[2]+'"></div></div><div class="mono" style="width:60px;text-align:right;font-weight:600">'+pct(r[1],0)+'</div></div>';}).join("")+'</div>'
+    +'<div class="tiny" style="margin-top:8px">Through '+mLabel(y.last)+', months compounded.</div>'
+    +'<details class="x" style="margin-top:10px"><summary><span>Month by month</span><span class="r">Open</span></summary><div>'+(S.perfHistory||[]).filter(function(p){return String(p.month).slice(0,4)===String(new Date().getFullYear());}).map(function(p){return '<div class="between" style="padding:5px 0"><span>'+mLabel(p.month)+'</span><span class="mono"><span class="'+(p.ibkr>=p.sp?"ok":"bad")+'">'+pct(p.ibkr)+'</span> <span class="mutc">vs '+pct(p.sp)+'</span></span></div>';}).join("")+'</div></details>'; }
+  html+='</div>';
+  var ov=S.overrules||[];
+  html+='<div><h2 style="margin:4px 0 8px">When you overruled the advice</h2><div class="card list" style="padding:0 14px">'+(ov.length?ov.map(function(o,i){return '<div class="li" style="min-height:52px"><span class="mono" style="font-weight:600;width:52px">'+esc(o.t)+'</span><span class="grow sub">'+esc(o.what)+'</span><span style="font-size:13px;font-weight:600" class="'+(o.who==="you"?"ok":"bad")+'">'+(o.who==="you"?"You":"The rule")+'</span><button style="background:none;border:0;min-width:32px;min-height:44px;color:var(--dim)" aria-label="Remove" data-act="ovDel" data-i="'+i+'">×</button></div>';}).join(""):'<div class="empty">Nothing recorded yet.</div>')+'</div>'
+    +'<details class="x" style="margin-top:10px"><summary><span>Record one</span><span class="r">Add</span></summary><div style="display:flex;flex-direction:column;gap:8px"><input id="ov-t" type="text" placeholder="Ticker" autocapitalize="characters"><input id="ov-w" type="text" placeholder="What you did, for example held and added"><div class="row"><button class="btn ghost sm grow" data-act="ovAdd" data-who="you">I was right</button><button class="btn ghost sm grow" data-act="ovAdd" data-who="rule">The rule was right</button></div></div></details></div>';
+  return html;
+}
+
+// ── MONEY ────────────────────────────────────────────────────────
+function catOf(k){return CATS.find(function(c){return c.k===k;})||{k:k,l:k};}
+function moneySeg(on){return '<div class="seg"><button data-act="tab" data-tab="money" class="'+(on==="m"?"on":"")+'">Month</button><button data-act="go" data-sub="m-savings" class="'+(on==="s"?"on":"")+'">Savings</button></div>';}
+function vMoney(){
+  var mn=monthNow(), html=topBar("Money")+moneySeg("m");
+  var perDay=mn.daysLeft>0?mn.capLeft/mn.daysLeft:0;
+  html+='<div><div class="sub">Left to spend in '+new Date().toLocaleDateString("en-GB",{month:"long"})+'</div><div class="big" style="margin-top:2px">'+(mn.capTot>0?SR(Math.max(0,mn.capLeft)):"No caps set")+'</div><div class="sub" style="margin-top:4px">'+mn.daysLeft+' days to go'+(mn.capTot>0&&perDay>0?' · '+SR(perDay)+' a day keeps you inside the caps':mn.capLeft<0?' · <span class="bad">over the caps by '+SR(-mn.capLeft)+'</span>':'')+'</div></div>';
+  var sorted=CATS.map(function(c){return {l:c.l,v:mn.sp[c.k]||0};}).filter(function(x){return x.v>0;}).sort(function(a,b){return b.v-a.v;});
+  if(sorted.length){ var top=sorted.slice(0,3), rest=sorted.slice(3).reduce(function(s,x){return s+x.v;},0), segs=top.map(function(x,i){return {l:x.l,v:x.v,c:PAL[i]};}); if(rest>0) segs.push({l:"Everything else",v:rest,c:PAL[3]});
+    html+='<div class="row" style="gap:18px">'+ringSVG(segs,120,"Spent",S.quiet?"•••":fS(mn.tv))+ringLegend(segs,function(v){return S.quiet?"•••":fS(v);})+'</div>'; }
+  var cats=UI.open.cats?CATS:CATS.filter(function(c,i){return i<3||c.k===S.selCat;});
+  html+='<div class="card"><label class="f" for="tx-amt">Add an expense, in riyals</label><div class="row" style="gap:10px"><input id="tx-amt" class="amt grow" type="text" inputmode="decimal" placeholder="0.00"><button class="btn" data-act="addTxn">Add</button></div>'
+    +'<div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">'+cats.map(function(c){return '<button class="pill'+(c.k===S.selCat?" on":"")+'" data-act="cat" data-k="'+c.k+'">'+esc(c.l)+'</button>';}).join("")+'<button class="pill" data-act="toggle" data-k="cats">'+(UI.open.cats?"Fewer":"More")+'</button></div>'
+    +(UI.open.cats?'<input id="tx-note" type="text" placeholder="Note, optional" style="margin-top:10px">':'')+'</div>';
+  var td=toDay(), today=S.transactions.filter(function(t){return String(t.date).trim()===td;}).reverse();
+  if(today.length) html+='<details class="x"><summary><span>Added today</span><span class="r">'+today.length+' · '+SR(today.reduce(function(s,t){return s+t.amount;},0))+'</span></summary><div>'+today.map(function(t){return '<div class="between" style="padding:4px 0"><span>'+esc(catOf(t.cat).l)+(t.note?' · '+esc(t.note):'')+(t.pending?' · <span class="warn">not sent yet</span>':'')+'</span><span class="row" style="gap:6px"><span class="mono" style="color:var(--tx)">'+fS(t.amount)+'</span><button style="background:none;border:0;min-width:36px;min-height:44px;color:var(--dim)" aria-label="Remove" data-act="delTxn" data-id="'+t.id+'">×</button></span></div>';}).join("")+'<div class="tiny">Removing here takes it off this phone. A row already in the sheet stays there.</div></div></details>';
+  var pace=mn.day/mn.dim, hot=CATS.map(function(c){var cap=S.caps[c.k]||0,s=mn.sp[c.k]||0;return {c:c,cap:cap,s:s,u:cap>0?s/cap:0};}).filter(function(x){return x.cap>0&&(x.u>=0.6||x.u>pace+0.15);}).sort(function(a,b){return b.u-a.u;}).slice(0,4);
+  html+='<div><div class="between" style="margin-bottom:12px"><h2>Caps</h2><div class="sub">Only the ones that matter today</div></div>';
+  html+=hot.length?'<div style="display:flex;flex-direction:column;gap:14px">'+hot.map(function(x){var col=x.u>1?"bad":x.u>pace+0.15?"warn":"ok", word=x.u>1?" · over":x.u>pace+0.15?" · ahead of pace":"";
+    return '<div><div class="between" style="font-size:14px"><div>'+esc(x.c.l)+'</div><div class="'+(col==="ok"?"mutc":col)+'"'+(col==="bad"?' style="font-weight:600"':'')+'>'+(S.quiet?Math.round(x.u*100)+"%":fS(x.s)+" of "+fS(x.cap))+word+'</div></div><div class="bar" style="margin-top:6px"><i style="width:'+Math.min(100,x.u*100)+'%;background:var(--'+col+')"></i></div></div>';}).join("")+'</div>':'<div class="sub">'+(mn.capTot>0?"Every cap is comfortably inside its pace.":"Set your caps to see them here.")+'</div>';
+  html+='</div><div>'
+    +'<button class="nav-row" data-act="go" data-sub="m-caps"><span>All caps and fixed costs</span><span class="r">Open</span></button>'
+    +'<button class="nav-row" data-act="go" data-sub="m-history"><span>Past months</span><span class="r">'+(S.monthHistory||[]).length+' closed</span></button>'
+    +'<button class="nav-row" data-act="go" data-sub="m-history"><span>Close the month</span><span class="r">'+(SALARY>0?SR(Math.max(0,Math.round(mn.inv)))+" to IBKR so far":"Surplus goes to IBKR")+'</span></button></div>';
+  return html;
+}
+function vCaps(){
+  var mn=monthNow(), html=head("Caps and fixed costs","t-money","You");
+  html+='<div><h2 style="margin-bottom:10px">Monthly caps, in riyals</h2><div class="list">'+CATS.map(function(c){var s=mn.sp[c.k]||0;return '<div class="li" style="min-height:60px"><span class="grow"><span style="display:block">'+esc(c.l)+'</span><span class="n" style="display:block">'+fS(s)+' spent so far</span></span><input type="number" inputmode="decimal" aria-label="'+esc(c.l)+' cap" value="'+(S.caps[c.k]||0)+'" data-chg="cap" data-k="'+c.k+'" class="mono" style="width:110px;text-align:right"></div>';}).join("")+'</div></div>';
+  html+='<div><h2 style="margin-bottom:10px">Fixed costs, in riyals</h2><div class="list">'+(S.fixedItems||[]).map(function(it,i){return '<div class="row" style="padding:6px 0;gap:8px"><input type="text" aria-label="Name" value="'+esc(it.n)+'" data-chg="fx" data-i="'+i+'" data-f="n" class="grow"><input type="number" inputmode="decimal" aria-label="Amount" value="'+(it.a||0)+'" data-chg="fx" data-i="'+i+'" data-f="a" class="mono" style="width:104px;text-align:right"><button style="background:none;border:0;min-width:36px;min-height:44px;color:var(--bad);font-size:20px" aria-label="Remove '+esc(it.n)+'" data-act="fxDel" data-i="'+i+'">×</button></div>';}).join("")+'</div><button class="btn ghost sm full" style="margin-top:8px" data-act="fxAdd">Add a fixed cost</button></div>';
+  html+='<div class="card"><div class="between" style="margin-bottom:8px"><h2>Added by the app</h2><span class="tag auto">Auto</span></div>'
+    +'<div class="between" style="padding:6px 0"><span class="sub">Life insurance</span><span class="mono">'+SR(Math.round(EGP_AXA/S.egpRate||0))+'</span></div>'
+    +(mn.pc>0?'<div class="between" style="padding:6px 0"><span class="sub">'+esc(PROP_OF_TYPE[mn.mt]||"Property")+' instalment</span><span class="mono">'+SR(Math.round(mn.pc))+'</span></div>':'')
+    +'<div class="between" style="padding:6px 0"><span class="sub">Family support</span><span class="mono">'+SR(Math.round(mn.famSAR))+'</span></div>'
+    +'<div class="between" style="padding:10px 0 0;border-top:1px solid var(--line);margin-top:6px"><span style="font-weight:600">All fixed costs</span><span class="mono brass" style="font-weight:600">'+SR(Math.round(mn.ft))+'</span></div>'
+    +(SALARY>0?'<div class="between" style="padding:6px 0 0"><span class="sub">Salary</span><span class="mono">'+SR(SALARY)+'</span></div>':'<div class="tiny" style="margin-top:8px">Add your salary in Settings to see what goes to IBKR.</div>')+'</div>';
+  return html;
+}
+function vHistory(){
+  var hist=dedupeByMonth(S.monthHistory).sort(function(a,b){return b.month.localeCompare(a.month);}), html=head("Past months","t-money","Auto");
+  function spentOf(h){return Object.values(h.cats||{}).reduce(function(a,b){return a+(+b||0);},0);}
+  var six=hist.slice(0,6).reverse();
+  if(six.length) html+='<div class="card"><div class="between" style="font-size:13px"><div style="font-size:16px;font-weight:600">Last '+six.length+' months</div><div class="lg"><span><i class="dot" style="background:'+PAL[0]+'"></i>Spent</span><span><i class="dot" style="background:'+PAL[1]+'"></i>To IBKR</span></div></div><div style="margin-top:12px">'+barsSVG(six.map(function(h){return {l:mLabel(h.month).split(" ")[0],a:spentOf(h),b:h.investedSAR||0};}),318,120)+'</div><div class="tiny" style="margin-top:6px">In riyals. Spent means day-to-day spending, without fixed costs.</div></div>';
+  // close
+  var un=unclosedMonths(), nm=UI.closeM||un[0]||nowM(), c=closeMonthCalc(nm), goals=savGoals(), isNow=nm===nowM(), closed=S.monthHistory.some(function(h){return String(h.month).trim()===nm;});
+  html+='<div class="card"><div style="font-size:16px;font-weight:600">Close '+mLabel(nm)+'</div><div class="sub" style="margin-top:4px">'+(isNow?monthNow().daysLeft+" days left. ":"")+'Closing records the month and sets what goes to IBKR.'+(closed?' <span class="warn">Already closed once. Closing again replaces that record.</span>':'')+'</div>';
+  if(un.length>1||(!isNow)) html+='<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">'+un.concat([nowM()]).map(function(m){return '<button class="pill'+(m===nm?" on":"")+'" data-act="pickClose" data-m="'+m+'">'+mLabel(m)+'</button>';}).join("")+'</div>';
+  html+='<div class="grid2" style="margin-top:12px"><div><div class="k">Base to IBKR</div><div class="v">'+SR(Math.max(0,Math.round(c.inv)))+'</div></div><div><div class="k">Left under your caps</div><div class="v">'+SR(c.ts)+'</div></div></div>';
+  if(c.ts>0) html+='<div style="margin-top:12px"><div class="sub" style="margin-bottom:8px">Where should the '+fS(c.ts)+' left under your caps go?</div><div class="grid3"><div><label class="f" for="cm-ibkr">To IBKR</label><input id="cm-ibkr" type="number" inputmode="decimal" value="'+(S.rollMode==="ibkr"?c.ts:0)+'" class="mono"></div><div><label class="f" for="cm-roll">Carry over</label><input id="cm-roll" type="number" inputmode="decimal" value="'+(S.rollMode==="ibkr"?0:c.ts)+'" class="mono"></div><div><label class="f" for="cm-save">To savings</label><input id="cm-save" type="number" inputmode="decimal" value="0" class="mono"></div></div>'
+    +(goals.length?'<label class="f" for="cm-goal" style="margin-top:10px">Savings goal</label><select id="cm-goal">'+goals.map(function(g){return '<option value="'+esc(g.id)+'">'+esc(g.name)+'</option>';}).join("")+'</select>':'')+'<div id="cm-err" class="tiny bad" style="margin-top:6px"></div></div>';
+  html+='<button class="btn full '+(isNow&&monthNow().daysLeft>3?"quiet":"")+'" style="margin-top:12px" data-act="closeMonth" data-m="'+nm+'">Close '+mLabel(nm)+' and record it</button>'+(isNow&&monthNow().daysLeft>3?'<div class="tiny" style="margin-top:6px">It is early. You can still close now if you want to.</div>':'')+'</div>';
+  html+='<div>'+(hist.length?hist.slice(0,UI.open.histAll?200:6).map(function(h){var cats=Object.keys(h.cats||{}).filter(function(k){return h.cats[k]>0;}).sort(function(a,b){return h.cats[b]-h.cats[a];});
+    return '<details class="x"><summary><span><span style="display:block">'+new Date(h.month+"-01T00:00:00").toLocaleDateString("en-GB",{month:"long",year:"numeric"})+'</span><span class="sub" style="display:block">Spent '+(S.quiet?"•••":fS(spentOf(h)))+' · sent '+M(h.investedUSD||0)+' to IBKR</span></span>'+IC.chev+'</summary><div>'+cats.map(function(k){return '<div class="between" style="padding:3px 0"><span>'+esc(catOf(k).l)+'</span><span class="mono">'+(S.quiet?"•••":fS(h.cats[k]))+'</span></div>';}).join("")+'<div class="between" style="padding:6px 0 0"><span>Fixed costs</span><span class="mono">'+(S.quiet?"•••":fS(h.fixedTotal||0))+'</span></div></div></details>';}).join(""):'<div class="sub">No closed months yet.</div>')
+    +(hist.length>6?'<button class="nav-row" data-act="toggle" data-k="histAll"><span>'+(UI.open.histAll?"Show fewer":"Older months")+'</span><span class="r">'+hist.length+' in all</span></button>':'')+'</div>';
+  var wed=((S.wedding||{}).entries||[]), wt=wed.reduce(function(s,e){return s+(+e.amount||0);},0);
+  html+='<div><h2 style="margin-bottom:8px">Closed records</h2><div class="card"><div class="between"><div><div style="font-size:16px;font-weight:600">Wedding</div><div class="sub" style="margin-top:2px">Finished. Kept for the record, read-only.'+(wed.length?' '+wed.length+' entries, '+M(wt)+' in all.':'')+'</div></div><div class="chip mutc">Closed</div></div></div><div class="tiny" style="margin-top:8px">The full list stays in the “Wedding (closed)” tab of your sheet.</div></div>';
+  return html;
+}
+function vSavings(){
+  var goals=savGoals(), html=topBar("Money")+moneySeg("s");
+  var tot=goals.reduce(function(s,g){return s+(+g.savedUSD||0);},0);
+  html+='<div><div class="sub">Saved across '+goals.length+' goal'+(goals.length===1?"":"s")+'</div><div class="big">'+M(tot)+'</div></div>';
+  goals.forEach(function(g){ var p=g.targetUSD>0?Math.min(100,(g.savedUSD||0)/g.targetUSD*100):0, done=g.targetUSD>0&&(g.savedUSD||0)>=g.targetUSD, id=esc(g.id);
+    html+='<div class="card"><div class="between"><div style="font-size:16px;font-weight:600">'+esc(g.name)+'</div>'+(done?'<span class="chip ok">Reached</span>':'<span class="mono mutc">'+p.toFixed(0)+'%</span>')+'</div>'
+      +'<div class="sub" style="margin-top:2px">'+M(g.savedUSD||0)+(g.targetUSD>0?' of '+M(g.targetUSD):'')+(g.targetDate?' · by '+esc(g.targetDate):'')+'</div><div class="bar" style="margin-top:10px"><i style="width:'+p+'%;background:var(--'+(done?"ok":"brass")+')"></i></div>'
+      +'<div class="row" style="gap:10px;margin-top:12px"><input id="sav-amt-'+id+'" type="number" inputmode="decimal" placeholder="Add dollars" aria-label="Amount to add to '+esc(g.name)+'" class="mono grow"><button class="btn sm" data-act="savAdd" data-id="'+id+'">Add</button></div>'
+      +'<details class="x" style="margin-top:12px;border-bottom:0"><summary><span class="sub">Edit this goal</span><span class="r">Open</span></summary><div style="display:flex;flex-direction:column;gap:8px"><input type="text" aria-label="Goal name" value="'+esc(g.name)+'" data-chg="sav" data-id="'+id+'" data-f="name"><div class="grid2"><input type="number" inputmode="decimal" aria-label="Target in dollars" placeholder="Target $" value="'+(g.targetUSD||"")+'" data-chg="sav" data-id="'+id+'" data-f="targetUSD"><input type="text" aria-label="Target date" placeholder="By, e.g. 2027-06" value="'+esc(g.targetDate||"")+'" data-chg="sav" data-id="'+id+'" data-f="targetDate"></div><button class="btn ghost sm" style="color:var(--bad)" data-act="savDel" data-id="'+id+'">Delete this goal</button></div></details></div>'; });
+  if(!goals.length) html+='<div class="card sub">No savings goals yet.</div>';
+  html+='<button class="btn ghost full" data-act="savNew">Add a goal</button><div class="tiny">Finished goals stay here until you delete them. Money you send from a month close lands on the goal by itself.</div>';
+  return html;
+}
+
+// ── PLAN ─────────────────────────────────────────────────────────
+function vPlan(){
+  var nlv=liveNLV(), goal=800000, end="2027-12-31", html=topBar("Plan");
+  var months=Math.max(1,(new Date(end)-new Date())/2629800000), need=(goal-nlv)/months;
+  html+='<div><div class="sub">Net value against the plan</div><div class="big">'+M(nlv)+'</div><div class="sub" style="margin-top:4px">'+(nlv>=goal?"You are past $800K.":"$800K by the end of 2027 needs about "+MK(need)+" a month, deposits and growth together.")+'</div></div>';
+  var h=(S.nlvHist||[]), t0=Date.now(), pts=h.map(function(r){return {x:new Date(r.d+"T00:00:00").getTime(),y:r.nlv};}); if(!pts.length) pts.push({x:t0,y:nlv});
+  html+='<div class="card">'+lineSVG(pts,318,130,{goal:{x0:pts[pts.length-1].x,y0:pts[pts.length-1].y,x1:new Date(end+"T00:00:00").getTime(),y1:goal},label:"Net value so far, and the straight path to 800 thousand dollars by December 2027"})
+    +'<div class="lg" style="margin-top:8px"><span><i style="width:14px;height:2px;background:var(--brass)"></i>Net value so far</span><span><i style="width:14px;border-top:2px dashed var(--tx)"></i>Path to $800K, Dec 2027</span></div>'+(h.length<3?'<div class="tiny" style="margin-top:6px">The gold line grows as the daily update adds a point each trading day.</div>':'')+'</div>';
+  var segs=splitSegs(), tot=segs.reduce(function(s,x){return s+x.v;},0)||1;
+  html+='<div><h2 style="margin-bottom:12px">Where the money sits</h2><div class="row" style="gap:18px">'+ringSVG(segs,130,"Book",MK(tot))+ringLegend(segs,function(v){return (v/tot*100).toFixed(0)+"%";})+'</div></div>';
+  var pass=passiveValue()/(nlv||1)*100, cp=new Date()<new Date("2027-01-01")?{p:35,d:"31 Dec 2026"}:new Date()<new Date("2027-04-01")?{p:45,d:"31 Mar 2027"}:new Date()<new Date("2027-07-01")?{p:48,d:"30 Jun 2027"}:{p:50,d:"30 Sep 2027"};
+  html+='<div><div class="between" style="font-size:14px;margin-bottom:8px"><div>Index funds and gold</div><div class="'+(pass>=cp.p?"ok":"warn")+'" style="font-weight:600">'+pass.toFixed(0)+'% of '+cp.p+'%</div></div><div style="position:relative"><div class="bar" style="height:10px"><i style="height:10px;width:'+Math.min(100,pass/50*100)+'%;background:var(--'+(pass>=cp.p?"ok":"warn")+')"></i></div><div style="position:absolute;left:calc('+(cp.p/50*100)+'% - 1px);top:-4px;width:2px;height:18px;background:var(--tx)"></div></div><div class="tiny" style="margin-top:8px">The mark is the next checkpoint: '+cp.p+'% by '+cp.d+'. The full bar is the 50% you want by 30 Sep 2027.</div></div>';
+  var f=S.fire, fc=calcFire(f.spend,f.swr,f.ret,f.contrib,f.rental,f.divEnabled?annualDividends():0,nlv), wt=wealthTotals();
+  var dep=(S.ibkrHistory||[]).reduce(function(s,x){return s+(+x.usd||0);},0);
+  html+='<div><button class="nav-row" data-act="go" data-sub="p-free"><span>Freedom date</span><span class="r">'+(f.spend>0?"Age "+fc.age+" · "+fc.pct.toFixed(0)+"% funded":"Set your numbers")+'</span></button>'
+    +'<button class="nav-row" data-act="go" data-sub="p-worth"><span>Net worth, property included</span><span class="r">'+MK(wt.net)+'</span></button>'
+    +'<button class="nav-row" data-act="go" data-sub="p-estate" style="border-bottom:1px solid var(--line)"><span>Deposits and estate</span><span class="r">'+MK(dep)+' paid in</span></button></div>';
+  return html;
+}
+var FIRE_NAMES={coast:["Coast","Stop adding money; growth alone gets you there"],lean:["Lean","Essentials only"],bar:["Part-time","Some work covers the gap"],trad:["Full","Your base-case spending"],fat:["Comfortable","The generous version"]};
+function vFree(){
+  var f=S.fire, html=head("Freedom date","t-plan");
+  if(!(f.spend>0)) html+='<div class="card sub">Enter your yearly spending below to see the five dates.</div>';
+  else html+='<div class="card list" style="padding:6px 16px">'+fireLadderRows().map(function(r){var nm=FIRE_NAMES[r.k], done=r.pct>=100;
+    return '<div style="padding:12px 0;border-bottom:1px solid var(--line2)"><div class="between"><div><div style="font-weight:600">'+nm[0]+(done?' <span class="chip ok" style="margin-left:6px">Reached</span>':'')+'</div><div class="sub">'+nm[1]+'</div></div><div style="text-align:right"><div class="mono" style="font-weight:600">'+MK(r.fn)+'</div><div class="tiny">'+(done?"funded":"age "+r.age+" · "+r.yrs+" yrs")+'</div></div></div><div class="bar" style="margin-top:8px"><i style="width:'+Math.min(100,r.pct)+'%;background:var(--'+(done?"ok":"brass")+')"></i></div></div>';}).join("")+'</div>';
+  function inp(k,l,step){return '<div><label class="f" for="fi-'+k+'">'+l+'</label><input id="fi-'+k+'" type="number" inputmode="decimal" step="'+(step||1)+'" value="'+(f[k]||0)+'" data-chg="fire" data-k="'+k+'" class="mono"></div>';}
+  html+='<div><div class="between" style="margin-bottom:10px"><h2>What moves the date</h2><span class="tag you">You</span></div><div class="grid2">'+inp("spend","Yearly spending, $")+inp("contrib","You add each month, $")+inp("ret","Growth a year, %",0.5)+inp("swr","Safe yearly draw, %",0.25)+inp("leanSpend","Lean spending, $")+inp("fatSpend","Comfortable spending, $")+inp("baristaIncome","Part-time income, $")+inp("coastAge","Coast by age")+inp("rental","Rent you receive a year, $")+'</div>'
+    +'<label class="row" style="margin-top:12px;min-height:44px"><input type="checkbox" data-chg="fireDiv"'+(f.divEnabled?" checked":"")+' style="width:22px;height:22px;min-height:0"><span>Count dividends as income ('+MK(annualDividends())+' a year)</span></label>'
+    +(FIRE_AGE_BASE?'':'<div class="tiny" style="margin-top:8px">Add your age in Settings so the ages come out right.</div>')+'</div>';
+  return html;
+}
+function vWorth(){
+  var w=wState(), t=wealthTotals(), html=head("Net worth","t-plan");
+  html+='<div><div class="sub">Everything you own, less what you owe</div><div class="big">'+M(t.net)+'</div></div>';
+  var hs=(w.history||[]).filter(function(x){return x.netWorthUSD;}).sort(function(a,b){return String(a.month).localeCompare(String(b.month));});
+  if(hs.length>=3) html+='<div class="card">'+lineSVG(hs.map(function(x,i){return {x:i,y:x.netWorthUSD};}),318,90,{label:"Net worth at each month close"})+'<div class="tiny" style="margin-top:6px">One point per closed month, '+mLabel(hs[0].month)+' to '+mLabel(hs[hs.length-1].month)+'.</div></div>';
+  function r(l,v,tag){return '<div class="between" style="padding:8px 0;border-bottom:1px solid var(--line2)"><span>'+l+(tag?' <span class="tag '+(tag==="Auto"?"auto":"you")+'" style="margin-left:6px">'+tag+'</span>':'')+'</span><span class="mono">'+M(v)+'</span></div>';}
+  html+='<div class="card"><h2 style="margin-bottom:6px">You own</h2>'+r("IBKR portfolio",t.ibkr,"Auto")+(t.props?r("Property, paid in so far",t.props,"Auto"):"")+(t.reserveUSD?r("Cash reserve",t.reserveUSD):"")+(t.manual?r("Other assets",t.manual,"You"):"")+'<div class="between" style="padding-top:10px"><span style="font-weight:600">Total</span><span class="mono" style="font-weight:600">'+M(t.assets)+'</span></div></div>';
+  html+='<div class="card"><h2 style="margin-bottom:6px">You owe</h2>'+(t.margin?r("IBKR margin",t.margin,"Auto"):"")+r("Property instalments left",t.inst,"Auto")+(t.cc?r("Cards and other",t.cc,"You"):"")+'<div class="between" style="padding-top:10px"><span style="font-weight:600">Total</span><span class="mono" style="font-weight:600">'+M(t.liab)+'</span></div></div>';
+  var un=wUnpaid(), paid=wSchedule().filter(function(x){return x.paid;}).sort(function(a,b){return b.date.localeCompare(a.date);});
+  html+='<div><div class="between" style="margin-bottom:8px"><h2>Instalments</h2><span class="sub">'+un.length+' left</span></div>';
+  if(!wSchedule().length) html+='<div class="sub">The instalment schedule lives on the phone where you first set it up. It is not on this device.</div>';
+  else html+='<div class="list">'+un.slice(0,UI.open.instAll?200:5).map(function(x){var dd=daysTo(x.date);return '<div class="li" style="min-height:64px"><span class="grow"><span style="display:block">'+esc(x.prop||"Property")+(x.maint?" maintenance":"")+'</span><span class="n" style="display:block">'+dShort(x.date)+' '+x.date.slice(0,4)+' · '+(S.quiet?"•••":"EGP "+fS(x.egp))+(dd<0?' · <span class="bad">overdue</span>':dd<=10?' · <span class="warn">in '+dd+' days</span>':'')+'</span></span><button class="btn ghost sm" data-act="markPaid" data-id="'+esc(x.id)+'">Mark paid</button></div>';}).join("")+'</div>'
+    +(un.length>5?'<button class="nav-row" data-act="toggle" data-k="instAll"><span>'+(UI.open.instAll?"Show fewer":"Show all "+un.length)+'</span><span class="r"></span></button>':'')
+    +(paid.length?'<details class="x"><summary><span>Paid</span><span class="r">'+paid.length+'</span></summary><div>'+paid.slice(0,12).map(function(x){return '<div class="between" style="padding:4px 0"><span>'+esc(x.prop||"")+' · '+esc(x.date)+'</span><button class="tiny" style="background:none;border:0;min-height:44px;text-decoration:underline" data-act="undoPaid" data-id="'+esc(x.id)+'">Undo</button></div>';}).join("")+'</div></details>':'');
+  html+='</div><div><div class="between" style="margin-bottom:8px"><h2>Other assets</h2><span class="tag you">You</span></div>'+(w.assetsManual||[]).map(function(a,i){ if(a.link==="reserve"||a.egp!==undefined) return '<div class="between" style="padding:8px 0"><span class="sub">'+esc(a.name||"Linked asset")+'</span><span class="tag auto">Auto</span></div>';
+    return '<div class="row" style="padding:6px 0;gap:8px"><input type="text" aria-label="Asset name" placeholder="Name" value="'+esc(a.name||"")+'" data-chg="wAsset" data-i="'+i+'" data-f="name" class="grow"><input type="number" inputmode="decimal" aria-label="Value in dollars" value="'+(a.usd||0)+'" data-chg="wAsset" data-i="'+i+'" data-f="usd" class="mono" style="width:110px;text-align:right"><button style="background:none;border:0;min-width:36px;min-height:44px;color:var(--bad);font-size:20px" aria-label="Remove" data-act="wDel" data-i="'+i+'">×</button></div>';}).join("")
+    +'<button class="btn ghost sm full" style="margin-top:8px" data-act="wAdd">Add an asset</button><div class="tiny" style="margin-top:8px">Exchange rate used: '+S.egpRate+' Egyptian pounds to the riyal.</div></div>';
+  return html;
+}
+function vEstate(){
+  var html=head("Deposits and estate","t-plan"), hist=(S.ibkrHistory||[]).slice().sort(function(a,b){return String(b.month).localeCompare(String(a.month));}), tot=hist.reduce(function(s,x){return s+(+x.usd||0);},0);
+  html+='<div class="card"><div class="between"><h2>Money paid into IBKR</h2><span class="tag you">You</span></div><div class="mono" style="font-size:24px;font-weight:600;margin-top:6px">'+M(tot)+'</div><div class="sub">across '+hist.length+' months</div>'
+    +'<div class="grid2" style="margin-top:12px"><div><label class="f" for="dep-m">Month</label><input id="dep-m" type="month" value="'+nowM()+'"></div><div><label class="f" for="dep-a">Dollars</label><input id="dep-a" type="number" inputmode="decimal" class="mono" placeholder="0"></div></div><button class="btn full" style="margin-top:10px" data-act="dep">Record the deposit</button>'
+    +'<details class="x" style="margin-top:12px;border-bottom:0"><summary><span class="sub">Past deposits</span><span class="r">Open</span></summary><div>'+hist.slice(0,24).map(function(x){return '<div class="between" style="padding:3px 0"><span>'+mLabel(x.month)+'</span><span class="mono">'+M(x.usd)+'</span></div>';}).join("")+'</div></details></div>';
+  var st=S.estate||{}, done=ESTATE_ITEMS.filter(function(r){return (st[r[0]]||{}).done;}).length;
+  html+='<div><div class="between" style="margin-bottom:8px"><h2>Estate checklist</h2><span class="sub">'+done+' of '+ESTATE_ITEMS.length+' done</span></div><div class="list">'+ESTATE_ITEMS.map(function(r){var e=st[r[0]]||{},on=!!e.done;
+    return '<button class="li" data-act="estate" data-k="'+r[0]+'" aria-pressed="'+on+'"><span style="width:24px;height:24px;border-radius:7px;border:2px solid var(--'+(on?"ok":"edge")+');background:'+(on?"var(--ok)":"none")+';color:var(--bg);display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0">'+(on?"✓":"")+'</span><span class="grow"><span style="display:block'+(on?";color:var(--mut)":"")+'">'+esc(r[1])+'</span><span class="n" style="display:block;white-space:normal">'+esc(r[2])+(on&&e.date?" · done "+esc(e.date):"")+'</span></span></button>';}).join("")+'</div></div>';
+  return html;
+}
+
+// ── MORE ─────────────────────────────────────────────────────────
+function vMore(){
+  var html=head("More","");
+  html+='<div><button class="nav-row" data-act="go" data-sub="x-family"><span>Family</span><span class="r">'+M(familyPlannedUSD())+' a month</span></button>'
+    +'<button class="nav-row" data-act="go" data-sub="x-dates"><span>Dates and buy levels</span><span class="r">'+events().length+' dated</span></button>'
+    +'<button class="nav-row" data-act="go" data-sub="x-month"><span>Month-end page</span><span class="r">One page to read or share</span></button>'
+    +'<button class="nav-row" data-act="go" data-sub="x-rules"><span>Your rules</span><span class="r">'+RULES.length+' on file</span></button>'
+    +'<button class="nav-row" data-act="go" data-sub="x-settings" style="border-bottom:1px solid var(--line)"><span>Settings</span><span class="r">This phone</span></button></div>';
+  html+='<div class="card"><div class="between"><div><div style="font-weight:600">Hide amounts</div><div class="sub">Swaps every figure for dots. Percentages stay.</div></div><button class="pill'+(S.quiet?" on":"")+'" data-act="quiet" aria-pressed="'+(S.quiet?"true":"false")+'">'+(S.quiet?"On":"Off")+'</button></div></div>';
+  html+='<div class="card"><div class="between"><h2>Data</h2><span class="tag auto">Auto</span></div><div class="sub" style="margin-top:6px" id="syncline">'+esc(syncText())+'</div><div class="sub" style="margin-top:6px">'+(S.lastIbkrSync?"IBKR was last copied into your sheet on "+esc(dShort(String(S.lastIbkrSync).slice(0,10)))+".":"The daily update copies IBKR into your sheet each trading morning.")+' The app reads the sheet each time you open it.</div><button class="btn ghost full" style="margin-top:12px" data-act="sync">Update now</button></div>';
+  return html;
+}
+var famPx={};
+function famQuotes(){
+  if(!FINNHUB_KEY||!navigator.onLine) return;
+  var all=(S.family.holdings||[]).concat((S.spouse||{}).holdings||[]).filter(function(h){return h.t&&+h.sh>0&&famPx[h.t]===undefined;});
+  all.forEach(function(h){ famPx[h.t]=null;
+    fetch("https://finnhub.io/api/v1/quote?symbol="+encodeURIComponent(tk(h.t))+"&token="+FINNHUB_KEY).then(function(r){return r.json();}).then(function(d){ if(d&&d.c>0){ famPx[h.t]=d.c; var ch=false;
+      (S.family.holdings||[]).concat((S.spouse||{}).holdings||[]).forEach(function(x){ if(x.t===h.t&&+x.sh>0){ x.usd=Math.round(x.sh*d.c); x.pxDate=toDay(); ch=true; } });
+      if(ch){ saveState(); if(UI.sub==="x-family"&&!document.activeElement.matches("input,select,textarea")) render(); } } }).catch(function(){}); });
+}
+function holdRows(list,kind){
+  return (list||[]).map(function(h,i){ var auto=+h.sh>0&&h.pxDate;
+    return '<div style="padding:8px 0;border-bottom:1px solid var(--line2)"><div class="row" style="gap:8px"><input type="text" aria-label="Ticker" placeholder="Ticker" autocapitalize="characters" value="'+esc(h.t||"")+'" data-chg="fam" data-kind="'+kind+'" data-i="'+i+'" data-f="t" class="mono" style="width:92px"><input type="number" inputmode="decimal" aria-label="Shares" placeholder="Shares" value="'+(h.sh||"")+'" data-chg="fam" data-kind="'+kind+'" data-i="'+i+'" data-f="sh" class="mono grow"><button style="background:none;border:0;min-width:36px;min-height:44px;color:var(--bad);font-size:20px" aria-label="Remove '+esc(h.t||"holding")+'" data-act="famDel" data-kind="'+kind+'" data-i="'+i+'">×</button></div>'
+      +'<div class="between" style="margin-top:6px">'+(auto?'<span class="tiny">Value <span class="tag auto">Auto</span> price of '+dShort(h.pxDate)+'</span><span class="mono">'+M(h.usd||0)+'</span>':'<span class="tiny">Value, if no share count</span><input type="number" inputmode="decimal" aria-label="Value in dollars" value="'+(h.usd||0)+'" data-chg="fam" data-kind="'+kind+'" data-i="'+i+'" data-f="usd" class="mono" style="width:120px;text-align:right">')+'</div></div>';}).join("")
+    +'<button class="btn ghost sm full" style="margin-top:10px" data-act="famAdd" data-kind="'+kind+'">Add a holding</button>';
+}
+function vFamily(){
+  var fam=S.family, nm=nowM(), plan=familyPlannedUSD(), logged=familyLoggedUSD(nm), html=head("Family","more");
+  var names=(fam.plan||[]).concat(fam.items||[]).map(function(x){return x.n;});
+  html+='<div><div class="sub">Support this month</div><div class="big">'+M(logged)+'</div><div class="sub" style="margin-top:4px">of '+M(plan)+' planned</div><div class="bar" style="margin-top:10px"><i style="width:'+(plan>0?Math.min(100,logged/plan*100):0)+'%;background:var(--brass)"></i></div></div>';
+  html+='<div class="card"><label class="f" for="fl-amt">Record support sent, in dollars</label><div class="row" style="gap:10px"><select id="fl-item" aria-label="Who or what for" style="flex:1.2">'+(names.length?names:["Other"]).map(function(n){return '<option>'+esc(n)+'</option>';}).join("")+'</select><input id="fl-amt" type="number" inputmode="decimal" class="mono" placeholder="0" style="flex:1"><button class="btn" data-act="famLog">Add</button></div>';
+  var lg=(fam.log||[]).filter(function(l){return parseMonth(l.month)===nm;}).reverse();
+  if(lg.length) html+='<details class="x" style="margin-top:12px;border-bottom:0"><summary><span class="sub">Sent this month</span><span class="r">'+lg.length+'</span></summary><div>'+lg.map(function(l){return '<div class="between" style="padding:3px 0"><span>'+esc(l.item)+' · '+esc(dShort(l.date))+'</span><span class="mono">'+M(l.amount)+'</span></div>';}).join("")+'</div></details>';
+  html+='</div>';
+  function planRows(arr,kind){return (arr||[]).map(function(it,i){return '<div class="row" style="padding:6px 0;gap:8px"><input type="text" aria-label="Name" value="'+esc(it.n||"")+'" data-chg="famPlan" data-kind="'+kind+'" data-i="'+i+'" data-f="n" class="grow"><input type="number" inputmode="decimal" aria-label="Dollars a month" value="'+(it.a||0)+'" data-chg="famPlan" data-kind="'+kind+'" data-i="'+i+'" data-f="a" class="mono" style="width:104px;text-align:right"><button style="background:none;border:0;min-width:36px;min-height:44px;color:var(--bad);font-size:20px" aria-label="Remove '+esc(it.n||"")+'" data-act="famDel" data-kind="'+kind+'" data-i="'+i+'">×</button></div>';}).join("");}
+  html+='<div><div class="between" style="margin-bottom:8px"><h2>Monthly plan, in dollars</h2><span class="tag you">You</span></div>'+planRows(fam.plan,"plan")+planRows(fam.items,"items")+'<button class="btn ghost sm full" style="margin-top:8px" data-act="famAdd" data-kind="plan">Add a line</button><div class="tiny" style="margin-top:8px">This total is added to your fixed costs each month by itself.</div></div>';
+  html+='<div><div class="between" style="margin-bottom:4px"><h2>Family account</h2><span class="mono">'+M(holdingsTotalV(fam.holdings))+'</span></div><div class="tiny" style="margin-bottom:6px">Enter the share count when you buy or sell. Prices fill in by themselves.</div>'+holdRows(fam.holdings,"holdings")+'</div>';
+  var sp=S.spouse||{};
+  html+='<div><div class="between" style="margin-bottom:4px"><h2>'+esc(SETTINGS.partnerName||"Partner")+'’s retirement</h2><span class="mono">'+M(holdingsTotalV(sp.holdings))+'</span></div><label class="f" for="sp-c" style="margin-top:8px">Added each month, in dollars</label><input id="sp-c" type="number" inputmode="decimal" class="mono" value="'+(sp.contrib||0)+'" data-chg="spContrib">'+holdRows(sp.holdings,"sp")+'</div>';
+  setTimeout(famQuotes,50);
+  return html;
+}
+function holdingsTotalV(list){return (list||[]).reduce(function(s,h){return s+(parseFloat(h.usd)||0);},0);}
+function vDates(){
+  var ev=events(), html=head("Dates and buy levels","more","Auto");
+  html+='<div><h2 style="margin-bottom:8px">Dates</h2>'+(ev.length?'<div class="list">'+ev.slice(0,UI.open.evAll?200:10).map(function(e){return '<button class="li" data-act="pos" data-t="'+tk(e.t)+'"><span class="mono '+(e.days<=3?"brass":"mutc")+'" style="width:64px;font-weight:600;font-size:13px">'+dShort(e.d)+'</span><span class="grow"><span class="t">'+esc(e.t)+(e.held?"":' <span class="tiny">not held</span>')+'</span><span class="n" style="display:block;white-space:normal">'+esc(evTxt(e))+'</span></span>'+IC.chev+'</button>';}).join("")+'</div>'+(ev.length>10?'<button class="nav-row" data-act="toggle" data-k="evAll"><span>'+(UI.open.evAll?"Show fewer":"Show all "+ev.length)+'</span><span class="r"></span></button>':''):'<div class="sub">No dated events on the sheet.</div>')+'</div>';
+  var lv=Object.keys(S.fv||{}).map(function(t){var f=S.fv[t],p=posOf(t);return {t:t,f:f,px:p?p.price:0};}).filter(function(x){return x.f.canBuy&&x.f.t1>0&&x.px>0;}).map(function(x){x.d=(x.px-x.f.t1)/x.f.t1*100;return x;}).sort(function(a,b){return a.d-b.d;});
+  html+='<div><h2 style="margin-bottom:4px">Buy levels</h2><div class="tiny" style="margin-bottom:8px">Only names where your plan allows buying. Closest to its level first.</div>'+(lv.length?'<div class="list">'+lv.map(function(x){var at=x.d<=0;return '<button class="li" data-act="pos" data-t="'+tk(x.t)+'"><span class="grow"><span class="t">'+esc(x.t)+'</span><span class="n" style="display:block">Price '+P2(x.px)+' · levels '+P2(x.f.t1)+(x.f.t2?" / "+P2(x.f.t2):"")+(x.f.t3?" / "+P2(x.f.t3):"")+'</span></span><span class="chip '+(at?"ok":"mutc")+'">'+(at?"At a level":x.d.toFixed(0)+"% above")+'</span></button>';}).join("")+'</div>':'<div class="sub">Fair values load from your sheet when the app updates.</div>')+'</div>';
+  return html;
+}
+function vRules(){
+  return head("Your rules","more")+'<div class="sub">For reference. The ones that decide a buy now run by themselves in Check a buy.</div><div>'+RULES.map(function(r){return '<details class="x"><summary><span>'+esc(r[0])+'</span>'+IC.chev+'</summary><div>'+esc(r[1])+'</div></details>';}).join("")+'</div><div class="tiny">Your decision journal lives in the project with Claude, where each ruling is dated.</div>';
+}
+function monthPage(){
+  var hist=dedupeByMonth(S.monthHistory).sort(function(a,b){return b.month.localeCompare(a.month);}), m=UI.pageM||(hist[0]&&hist[0].month)||nowM(), h=hist.find(function(x){return x.month===m;}), pf=(S.perfHistory||[]).find(function(x){return x.month===m;});
+  var nlv=liveNLV(), hp=held().filter(function(p){return p.avg>0;}), up=hp.slice().sort(function(a,b){return posPct(b)-posPct(a);}).slice(0,3), dn=hp.slice().sort(function(a,b){return posPct(a)-posPct(b);}).slice(0,3);
+  var spent=h?Object.values(h.cats||{}).reduce(function(a,b){return a+(+b||0);},0):monthNow().tv;
+  return {m:m,h:h,pf:pf,nlv:nlv,up:up,dn:dn,spent:spent,hist:hist,exits:held().filter(isExitPos).length,cashPct:nlv>0?(S.cashUSD||0)/nlv*100:0,pass:passiveValue()/(nlv||1)*100};
+}
+function vMonthPage(){
+  var d=monthPage(), html='<div class="noprint">'+head("Month-end page","more","Auto")+'</div>';
+  var ms=d.hist.map(function(x){return x.month;}); if(ms.indexOf(nowM())<0) ms.unshift(nowM());
+  html+='<div class="noprint"><select aria-label="Month" data-chg="pageM">'+ms.map(function(m){return '<option value="'+m+'"'+(m===d.m?" selected":"")+'>'+new Date(m+"-01T00:00:00").toLocaleDateString("en-GB",{month:"long",year:"numeric"})+(m===nowM()?" (so far)":"")+'</option>';}).join("")+'</select></div>';
+  html+='<div class="card"><div class="sub">'+new Date(d.m+"-01T00:00:00").toLocaleDateString("en-GB",{month:"long",year:"numeric"})+'</div><div class="big" style="margin-top:4px">'+M(d.nlv)+'</div><div class="sub">net value today</div>'
+    +'<div class="grid2" style="margin-top:14px"><div><div class="k">Your month</div><div class="v '+(d.pf?(d.pf.ibkr>=0?"ok":"bad"):"")+'">'+(d.pf?pct(d.pf.ibkr):"Not in yet")+'</div></div><div><div class="k">S&P 500</div><div class="v">'+(d.pf?pct(d.pf.sp):"—")+'</div></div><div><div class="k">Spent day to day</div><div class="v">'+SR(d.spent)+'</div></div><div><div class="k">Sent to IBKR</div><div class="v">'+(d.h?M(d.h.investedUSD||0):"Month still open")+'</div></div><div><div class="k">Index and gold</div><div class="v">'+d.pass.toFixed(0)+'%</div></div><div><div class="k">Cash</div><div class="v '+(d.cashPct<5?"warn":"")+'">'+d.cashPct.toFixed(1)+'%</div></div></div></div>';
+  function mv(l,arr){return '<div class="card"><h2 style="margin-bottom:6px">'+l+'</h2>'+arr.map(function(p){return '<div class="between" style="padding:5px 0"><span class="mono" style="font-weight:600">'+esc(p.t)+'</span><span class="mono '+(posPct(p)>=0?"ok":"bad")+'">'+pct(posPct(p),0)+' against cost</span></div>';}).join("")+'</div>';}
+  html+='<div class="grid2" style="grid-template-columns:1fr">'+mv("Furthest above cost",d.up)+mv("Furthest below cost",d.dn)+'</div>';
+  html+='<div class="card"><h2 style="margin-bottom:6px">Still open</h2><div class="sub">'+(d.exits?d.exits+" exit"+(d.exits>1?"s":"")+" you ruled on and have not done. ":"No exits waiting. ")+(unclosedMonths().length?unclosedMonths().length+" month"+(unclosedMonths().length>1?"s":"")+" not closed. ":"")+'</div></div>';
+  html+='<div class="row noprint"><button class="btn grow" data-act="share">Share as text</button><button class="btn ghost grow" data-act="print">Print or save PDF</button></div>';
+  return html;
+}
+function vSettings(first){
+  var s=loadSettings(), html=first?'<h1>Connect your sheet</h1><div class="sub">These stay on this phone only. Fill the three starred lines, save, and the app loads your data.</div>':head("Settings","more","You");
+  function f(id,l,v,ph,type){return '<div><label class="f" for="'+id+'">'+l+'</label><input id="'+id+'" type="'+(type||"text")+'" value="'+esc(v||"")+'" placeholder="'+esc(ph||"")+'" autocomplete="off" autocapitalize="off"></div>';}
+  html+='<div style="display:flex;flex-direction:column;gap:12px">'+f("su-url","Apps Script web address *",s.scriptUrl,"https://script.google.com/macros/s/…/exec")+f("su-token","Sync password *",s.token)+f("su-fh","Finnhub key, for live prices *",s.finnhubKey)+f("su-name","Your name",s.ownerName)
+    +'<div class="grid2">'+f("su-sal","Salary, SAR a month",s.salarySAR,"","number")+f("su-age","Age in mid-2026",s.age2026,"","number")+f("su-egpa","Instalment A, EGP",s.egpA,"","number")+f("su-egpb","Instalment B, EGP",s.egpB,"","number")+f("su-egpm","Maintenance, EGP",s.egpM,"","number")+f("su-egpx","Insurance, EGP",s.egpAxa,"","number")+f("su-pa","Property A name",s.propA)+f("su-pb","Property B name",s.propB)+f("su-p1","Your short name",s.ownerShort)+f("su-p2","Partner’s name",s.partnerName)+'</div>'
+    +'<button class="btn full" data-act="saveSetup">Save and reload</button></div>';
+  if(!first) html+='<div class="card"><h2>This phone’s copy</h2><div class="sub" style="margin-top:4px">Clears what is stored on this phone and reloads it from your sheet. The sheet is not touched.</div><button class="btn ghost full" style="margin-top:12px;color:var(--bad)" data-act="reset">Clear and reload</button></div><div class="tiny">Version 6.0 · 15 Nov 2026</div>';
+  return html;
+}
+
+// ── render + navigation ──────────────────────────────────────────
+var TABS=[["home","Home",'<path d="M3 10.5 10 4l7 6.5V17H3z" stroke-linejoin="round"/>'],["book","Book",'<path d="M4 5h12M4 10h12M4 15h12" stroke-linecap="round"/>'],["calls","Calls",'<path d="M4 4h12v9H9l-4 3v-3H4z" stroke-linejoin="round"/>'],["money","Money",'<rect x="3" y="5" width="14" height="11" rx="2"/><path d="M13 10.5h4" stroke-linecap="round"/>'],["plan","Plan",'<circle cx="10" cy="10" r="6.5"/><circle cx="10" cy="10" r="2"/>']];
+var SUBS={check:vCheck,"m-savings":vSavings,"m-caps":vCaps,"m-history":vHistory,"p-free":vFree,"p-worth":vWorth,"p-estate":vEstate,more:vMore,"x-family":vFamily,"x-dates":vDates,"x-rules":vRules,"x-month":vMonthPage,"x-settings":vSettings};
+var SUBTAB={check:"book","m-savings":"money","m-caps":"money","m-history":"money","p-free":"plan","p-worth":"plan","p-estate":"plan"};
+function render(){
+  var v=$("view"); if(!v) return; wState();
+  var html;
+  try{
+    if(!SCRIPT_URL&&UI.sub!=="x-settings") html=vSettings(true);
+    else if(UI.sub&&SUBS[UI.sub]) html=SUBS[UI.sub]();
+    else html=({home:vHome,book:vBook,calls:vCalls,money:vMoney,plan:vPlan}[UI.tab]||vHome)();
+  }catch(e){ html='<h1>Something went wrong</h1><div class="card sub">This screen could not be drawn. Your data is safe. Try “Update now” in More, or tell Claude this message: '+esc(e&&e.message||e)+'</div><button class="btn ghost full" data-act="tab" data-tab="home">Back to Home</button>'; }
+  v.innerHTML=html;
+  var cur=UI.sub?SUBTAB[UI.sub]||"":UI.tab;
+  $("tabs-in").innerHTML=TABS.map(function(t){return '<button data-act="tab" data-tab="'+t[0]+'" class="'+(cur===t[0]?"on":"")+'"'+(cur===t[0]?' aria-current="page"':'')+'><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">'+t[2]+'</svg>'+t[1]+'</button>';}).join("");
+}
+function go(tab,sub){ UI.tab=tab||UI.tab; UI.sub=sub||null; try{sessionStorage.setItem("fc-tab",UI.tab);}catch(e){} closeSheet(); render(); window.scrollTo(0,0); }
+function val(id){var e=$(id);return e?e.value.trim():"";}
+function famList(kind){return kind==="sp"?(S.spouse.holdings=S.spouse.holdings||[]):S.family[kind];}
+function saveFam(){ saveState(); saveSetting("familyData",{plan:S.family.plan,holdings:S.family.holdings,items:S.family.items}); saveSetting("spouseData",S.spouse); }
+var ACT={
+  tab:function(d){go(d.tab,null);},
+  go:function(d){ var s=d.sub||""; if(s.indexOf("t-")===0) go(s.slice(2),null); else if(s==="") go(UI.tab,null); else go(UI.tab,s); },
+  pos:function(d){openPos(d.t);}, closeSheet:closeSheet,
+  bookf:function(d){UI.book=d.f;render();}, book:function(d){UI.book=d.f||"all";go("book",null);},
+  quiet:function(){S.quiet=!S.quiet;saveState();render();},
+  checkT:function(d){UI.check.t=d.t;go("book","check");},
+  toggle:function(d){UI.open[d.k]=!UI.open[d.k];render();},
+  sync:function(){ if(!navigator.onLine){toast("You are offline. Showing the last copy.",true);return;} toast("Updating…"); pullAll(true); },
+  saifCheck:function(){UI.saifText=val("saif-tx"); if(!UI.saifText){toast("Paste the post first",true);return;} UI.saifRes=parseSaif(UI.saifText);render();},
+  saifSave:function(){ var r=UI.saifRes; if(!r||!r.tickers.length) return; S.saifLocal=S.saifLocal||[]; r.tickers.forEach(function(t){S.saifLocal.unshift({t:t,label:r.label||"Call",date:toDay(),text:UI.saifText.slice(0,400)});}); saveState(); UI.saifRes=null; UI.saifText=""; render(); toast("Kept on this phone"); },
+  saifCopy:function(){ var txt="Saif post, "+toDay()+":\n"+UI.saifText; (navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(function(){toast("Copied. Paste it into the chat.");}).catch(function(){toast("Could not copy on this phone",true);}); },
+  saifDel:function(d){(S.saifLocal||[]).splice(+d.i,1);saveState();render();},
+  ovAdd:function(d){ var t=tk(val("ov-t")), w=val("ov-w"); if(!t||!w){toast("Add the ticker and what you did",true);return;} S.overrules=S.overrules||[]; S.overrules.unshift({t:t,what:w,who:d.who,date:toDay()}); saveState(); render(); },
+  ovDel:function(d){(S.overrules||[]).splice(+d.i,1);saveState();render();},
+  cat:function(d){S.selCat=d.k;saveState();var a=val("tx-amt"),n=val("tx-note");render();if($("tx-amt"))$("tx-amt").value=a;if($("tx-note"))$("tx-note").value=n;},
+  addTxn:function(){ var amt=num(val("tx-amt")); if(!(amt>0)){toast("Enter an amount first",true);return;} var note=val("tx-note"), td=toDay(), nm=nowM(), t={id:Date.now(),date:td,month:nm,cat:S.selCat,amount:amt,note:note,pending:true};
+    S.transactions.push(t); saveState(); render();
+    sheetsAppend("Transactions",[td,nm,t.cat,amt,note]).then(function(){delete t.pending;saveState();toast(catOf(t.cat).l+" "+fS(amt)+" saved");}).catch(function(){toast("Saved on this phone. It will go to the sheet next time you are online.",true);render();}); },
+  delTxn:function(d){S.transactions=S.transactions.filter(function(t){return String(t.id)!==String(d.id);});saveState();render();},
+  fxAdd:function(){S.fixedItems.push({n:"New cost",a:0});saveState();render();}, fxDel:function(d){S.fixedItems.splice(+d.i,1);saveState();saveSetting("fixedItems",S.fixedItems);render();},
+  pickClose:function(d){UI.closeM=d.m;render();},
+  closeMonth:function(d){ confirmCloseMonth(d.m); },
+  savAdd:function(d){ var g=savFind(d.id), amt=num(val("sav-amt-"+d.id)); if(!g) return; if(!(amt>0)){toast("Enter an amount first",true);return;} g.log=g.log||[]; g.log.push({date:toDay(),amount:Math.round(amt)}); g.savedUSD=(parseFloat(g.savedUSD)||0)+Math.round(amt); saveState(); render(); savingsPush().then(function(){toast("Added "+fU(amt)+" to "+g.name);}).catch(function(){toast("Saved on this phone only for now",true);}); },
+  savNew:function(){ savGoals().push({id:"g"+Date.now(),name:"New goal",emoji:"",targetUSD:0,targetDate:"",savedUSD:0,note:"",log:[]}); saveState(); render(); savingsPush().catch(function(){}); },
+  savDel:function(d){ if(!confirm2("sd"+d.id,"Tap Delete again to remove this goal")) return; S.savings.goals=savGoals().filter(function(g){return g.id!==d.id;}); saveState(); render(); savingsPush().catch(function(){}); },
+  markPaid:function(d){ var r=wSchedule().find(function(x){return String(x.id)===String(d.id);}); if(!r||r.paid) return; if(!confirm2("mp"+d.id,"Tap again to mark "+dShort(r.date)+" as paid")) return; r.paid=true; r.paidDate=toDay(); saveState(); render(); wealthPush().then(function(){toast("Marked paid");}).catch(function(){toast("Saved on this phone only for now",true);}); },
+  undoPaid:function(d){ var r=wSchedule().find(function(x){return String(x.id)===String(d.id);}); if(!r) return; r.paid=false; r.paidDate=""; saveState(); render(); wealthPush().catch(function(){}); },
+  wAdd:function(){wState().assetsManual.push({id:"m"+Date.now(),name:"",usd:0});saveState();render();},
+  wDel:function(d){ if(!confirm2("wd"+d.i,"Tap × again to remove it")) return; wState().assetsManual.splice(+d.i,1); saveState(); render(); wealthPush().catch(function(){}); },
+  dep:function(){ var m=val("dep-m"), a=num(val("dep-a")); if(!m||!(a>0)){toast("Enter the month and the amount",true);return;} S.ibkrHistory=S.ibkrHistory.filter(function(h){return h.month!==m;}); S.ibkrHistory.push({month:m,usd:a}); saveState(); saveSetting("ibkrHistory",S.ibkrHistory); render(); toast("Deposit recorded"); },
+  estate:function(d){ S.estate=S.estate||{}; var e=S.estate[d.k]||{}; S.estate[d.k]=e.done?{done:false,note:e.note}:{done:true,note:e.note,date:toDay()}; saveState(); render(); },
+  famAdd:function(d){ if(d.kind==="plan") S.family.plan.push({n:"New line",a:0}); else famList(d.kind).push({t:"",sh:0,usd:0}); saveState(); render(); },
+  famDel:function(d){ if(!confirm2("fd"+d.kind+d.i,"Tap × again to remove it")) return; famList(d.kind).splice(+d.i,1); saveFam(); render(); },
+  famLog:function(){ var item=val("fl-item")||"Other", amt=num(val("fl-amt")); if(!(amt>0)){toast("Enter an amount first",true);return;} var td=toDay(), nm=nowM(); S.family.log.push({id:Date.now(),date:td,month:nm,item:item,amount:amt}); saveState(); render(); sheetsAppend("Family",[td,nm,item,amt,""]).then(function(){toast("Recorded");}).catch(function(){toast("Saved on this phone only for now",true);}); },
+  share:function(){ var d=monthPage(), txt=new Date(d.m+"-01T00:00:00").toLocaleDateString("en-GB",{month:"long",year:"numeric"})+"\nNet value: "+fU(d.nlv)+(d.pf?"\nMonth: "+pct(d.pf.ibkr)+" (S&P "+pct(d.pf.sp)+")":"")+"\nSpent: SAR "+fS(d.spent)+(d.h?"\nTo IBKR: "+fU(d.h.investedUSD||0):"")+"\nIndex and gold: "+d.pass.toFixed(0)+"%\nCash: "+d.cashPct.toFixed(1)+"%\nAbove cost: "+d.up.map(function(p){return p.t+" "+pct(posPct(p),0);}).join(", ")+"\nBelow cost: "+d.dn.map(function(p){return p.t+" "+pct(posPct(p),0);}).join(", ");
+    if(navigator.share) navigator.share({title:"Month-end",text:txt}).catch(function(){}); else if(navigator.clipboard) navigator.clipboard.writeText(txt).then(function(){toast("Copied");}); },
+  print:function(){window.print();},
+  saveSetup:function(){ var o={scriptUrl:val("su-url"),token:val("su-token"),finnhubKey:val("su-fh"),ownerName:val("su-name"),salarySAR:val("su-sal"),age2026:val("su-age"),egpA:val("su-egpa"),egpB:val("su-egpb"),egpM:val("su-egpm"),egpAxa:val("su-egpx"),propA:val("su-pa"),propB:val("su-pb"),ownerShort:val("su-p1"),partnerName:val("su-p2")}; if(!o.scriptUrl){toast("The Apps Script address is needed",true);return;} saveSettingsObj(o); location.reload(); },
+  reset:function(){ if(!confirm2("reset","Tap again to clear this phone’s copy")) return; localStorage.removeItem(LS_KEY); location.reload(); }
+};
+var CHG={
+  ckT:function(d,el){UI.check.t=el.value;render();}, ckA:function(d,el){UI.check.amt=el.value;render();},
+  saifText:function(d,el){UI.saifText=el.value;},
+  cap:function(d,el){S.caps[d.k]=parseFloat(el.value)||0;saveState();saveSetting("caps",S.caps);},
+  fx:function(d,el){var it=S.fixedItems[+d.i];if(!it)return;it[d.f]=d.f==="a"?(parseFloat(el.value)||0):el.value;saveState();saveSetting("fixedItems",S.fixedItems);},
+  fire:function(d,el){S.fire[d.k]=parseFloat(el.value)||0;saveState();saveSetting("fireSettings",S.fire);render();},
+  fireDiv:function(d,el){S.fire.divEnabled=el.checked;saveState();saveSetting("fireSettings",S.fire);render();},
+  sav:function(d,el){var g=savFind(d.id);if(!g)return;g[d.f]=d.f==="targetUSD"?(parseFloat(el.value)||0):el.value;saveState();savingsPush().catch(function(){});},
+  wAsset:function(d,el){var a=wState().assetsManual[+d.i];if(!a)return;a[d.f]=d.f==="usd"?(parseFloat(el.value)||0):el.value;saveState();wealthPush().catch(function(){});},
+  fam:function(d,el){var h=famList(d.kind)[+d.i];if(!h)return; if(d.f==="t"){h.t=tk(el.value);h.pxDate="";delete famPx[h.t];} else if(d.f==="sh"){h.sh=parseFloat(el.value)||0;h.pxDate="";delete famPx[h.t];} else h.usd=parseFloat(el.value)||0; saveFam(); famQuotes();},
+  famPlan:function(d,el){var it=S.family[d.kind][+d.i];if(!it)return;it[d.f]=d.f==="a"?(parseFloat(el.value)||0):el.value;saveFam();},
+  spContrib:function(d,el){S.spouse.contrib=parseFloat(el.value)||0;saveFam();},
+  pageM:function(d,el){UI.pageM=el.value;render();}
+};
+document.addEventListener("click",function(e){
+  if(e.target.id==="sheet"){closeSheet();return;}
+  var el=e.target.closest("[data-act]"); if(!el) return; var fn=ACT[el.getAttribute("data-act")]; if(fn) fn(el.dataset,el);
+});
+document.addEventListener("change",function(e){ var el=e.target.closest("[data-chg]"); if(!el) return; var fn=CHG[el.getAttribute("data-chg")]; if(fn) fn(el.dataset,el); });
+document.addEventListener("keydown",function(e){ if(e.key==="Escape") closeSheet(); });
+
+// ── start ────────────────────────────────────────────────────────
+if(S.overrules===undefined) S.overrules=[{t:"TTD",what:"Held and added",who:"you",date:"2026-11-15"},{t:"CELH",what:"Kept it",who:"you",date:"2026-11-15"},{t:"SERV",what:"Averaged down",who:"rule",date:"2026-11-15"}];
+if(S.family&&!Array.isArray(S.family.plan)) S.family.plan=[]; if(S.family&&!Array.isArray(S.family.items)) S.family.items=[]; if(S.family&&!Array.isArray(S.family.holdings)) S.family.holdings=[]; if(S.family&&!Array.isArray(S.family.log)) S.family.log=[];
+S.spouse=S.spouse||{contrib:0,holdings:[]}; if(!S.selCat) S.selCat="food";
+render();
+function maybeSync(){ if(SCRIPT_URL&&navigator.onLine&&!syncing&&Date.now()-(S.lastSync||0)>5*60*1000) pullAll(false); }
+maybeSync();
+document.addEventListener("visibilitychange",function(){ if(!document.hidden) maybeSync(); });
+window.addEventListener("online",maybeSync);
+</script>
+</body>
+</html>
